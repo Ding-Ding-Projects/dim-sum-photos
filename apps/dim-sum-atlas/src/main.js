@@ -24,11 +24,11 @@ function createWindow() {
 }
 
 ipcMain.handle('catalog:read', () => {
-  const catalogPath = path.resolve(__dirname, '..', '..', '..', 'catalog', 'index.json');
+  const catalogPath = path.resolve(__dirname, '..', '..', '..', 'dim-sum', 'index.json');
   const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
   catalog.dishes = catalog.dishes.map((dish) => ({
     ...dish,
-  image: dish.image ? { ...dish.image, assetUrl: pathToFileURL(path.resolve(__dirname, '..', '..', '..', 'catalog', dish.image.path)).toString(), releaseUrl: IMAGE_RELEASE_BASE + dish.image.path.replaceAll('\\', '/') } : dish.image
+    image: dish.image ? { ...dish.image, assetUrl: pathToFileURL(path.resolve(__dirname, '..', '..', '..', 'dim-sum', dish.image.path)).toString(), releaseUrl: IMAGE_RELEASE_BASE + dish.image.path.replaceAll('\\', '/') } : dish.image
   }));
   return catalog;
 });
@@ -100,7 +100,7 @@ ipcMain.handle('export:records', async (_event, { records, format, archive, pass
   } else {
     const sevenZip = find7z();
     if (!sevenZip) throw new Error('7z.exe was not found. Install 7-Zip to enable 7z exports.');
-    const args = ['a', chosen.filePath, dataFile, '-y'];
+    const args = ['a', chosen.filePath, path.join(temp, '*'), '-r', '-y'];
     if (password) args.push(`-p${password}`, '-mhe=on');
     const result = spawnSync(sevenZip, args, { encoding: 'utf8' });
     if (result.status !== 0) throw new Error(result.stderr || '7z export failed.');
