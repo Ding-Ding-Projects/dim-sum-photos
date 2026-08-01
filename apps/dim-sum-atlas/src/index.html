@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dim Sum Atlas</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">DS</span><span><strong>Dim Sum Atlas</strong><small>Hong Kong tea-house catalogue</small></span></div>
+    <div class="top-actions"><button class="icon-button" id="settings-button" aria-label="Open settings">⚙</button><button class="avatar" aria-label="Profile">A</button></div>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Primary navigation">
+    <button class="tab active" role="tab" aria-selected="true" data-tab="gallery">Gallery <span id="dish-count">0</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="favorites">Favorites <span id="favorite-count">0</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="about">About</button>
+  </nav>
+  <main>
+    <section id="gallery-panel" class="panel" role="tabpanel">
+      <div class="hero">
+        <div><p class="eyebrow">YUM CHA, CATALOGUED</p><h1>Find your next<br /><em>steamer basket.</em></h1><p class="hero-copy">Browse every dish in the atlas, with ingredients, allergens, and a little fictional tea-house lore.</p></div>
+        <div class="hero-stat"><span id="hero-total">0</span><small>catalogued dishes</small></div>
+      </div>
+      <div class="controls"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search dishes, ingredients, or lore" /><button id="regex-button" title="Open regex builder">.*</button></label><button class="filter-button" id="filter-button">Filter <span>⌄</span></button><button class="filter-button" id="export-button">Export</button></div>
+      <div class="chips" id="category-chips" aria-label="Categories"></div>
+      <div class="bulkbar" id="bulkbar"><span><strong id="selection-count">0</strong> selected</span><button id="select-visible">Select visible</button><button id="clear-selection">Clear</button><button id="bulk-export">Export selected</button></div><div class="content-grid"><div class="gallery" id="gallery" aria-live="polite"></div><aside class="detail" id="detail"><div class="detail-empty"><span class="empty-icon">✦</span><h2>Select a dish</h2><p>Choose a card to see its full description, ingredients, origin, and facts.</p></div></aside></div>
+    </section>
+    <section id="favorites-panel" class="panel hidden"><div class="page-heading"><p class="eyebrow">YOUR TABLE</p><h1>Saved dishes</h1><p>Keep a short list of dishes you want to remember.</p></div><div class="gallery" id="favorites-gallery"></div></section>
+    <section id="about-panel" class="panel hidden"><div class="about-card"><p class="eyebrow">ABOUT THE ATLAS</p><h1>Good food, good stories.</h1><p>Dim Sum Atlas is a local-first gallery for the bundled Hong Kong dim-sum catalog. Every invented origin and fact is marked as fictional catalog lore, so playful storytelling never pretends to be history.</p><div class="about-facts"><span><strong>Material 3</strong> expressive desktop UI</span><span><strong>Local-first</strong> no runtime image fetching</span><span><strong>Accessible</strong> keyboard-ready cards and tabs</span></div></div></section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="./renderer.js"></script>
+</body>
+</html>

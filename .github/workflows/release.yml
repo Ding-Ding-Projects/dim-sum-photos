@@ -1,0 +1,598 @@
+name: Test, package, and publish
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Verify pinned Lowlevel MCP submodule
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          expected_url='https://github.com/codingmachineedge/lowlevel-computer-use-mcp.git'
+          actual_url="$(git config -f .gitmodules --get submodule.modules/lowlevel-computer-use-mcp.url)"
+          [[ "$actual_url" == "$expected_url" ]]
+          status="$(git submodule status --recursive)"
+          [[ -n "$status" && "$status" != [-+U]* ]]
+          [[ -f modules/lowlevel-computer-use-mcp/README.md ]]
+
+      - name: Test Windows sync
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & ./scripts/test-sync-agent-memory.ps1
+
+      - name: Test Linux sync
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash ./scripts/test-sync-agent-memory.sh
+
+      - name: Test regex and product instruction contracts
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node --check ./docs/regex-engine.js
+          node --check ./docs/regex-worker.js
+          node --check ./docs/regex-builder.js
+          node ./scripts/test-regex-builder.mjs
+
+      - name: Test collaboration and autonomous completion policy
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node ./scripts/test-discussion-policy.mjs
+
+      - name: Verify indexed dim-sum catalog and images
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [[ -f dim-sum/CATALOG_COMPLETE ]]; then
+            node ./scripts/build-dim-sum-index.mjs
+            node ./scripts/verify-dim-sum-catalog.mjs
+          else
+            node ./scripts/build-dim-sum-index.mjs --progress --tracked-only
+            node ./scripts/verify-dim-sum-catalog.mjs --progress
+          fi
+
+  package-windows:
+    name: Package Windows archive
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Build Windows ZIP
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $requiredFiles = @(
+            'README.md',
+            'memory/SHARED_INSTRUCTIONS.md',
+            'scripts/sync-agent-memory.ps1',
+            'scripts/sync-agent-memory.sh',
+            'scripts/test-sync-agent-memory.ps1',
+            'scripts/test-sync-agent-memory.sh',
+            'scripts/test-regex-builder.mjs',
+            'scripts/test-discussion-policy.mjs',
+            'scripts/build-dim-sum-index.mjs',
+            'scripts/verify-dim-sum-catalog.mjs',
+            'skills/agent-global-memory/SKILL.md',
+            'dim-sum/index.json',
+            'dim-sum/schema.json',
+            'dim-sum/image-manifest.json',
+            'docs/regex-builder.html',
+            'docs/regex-builder.css',
+            'docs/regex-builder.js',
+            'docs/regex-engine.js',
+            'docs/regex-worker.js'
+          )
+          foreach ($relativePath in $requiredFiles) {
+            $sourcePath = Join-Path $env:GITHUB_WORKSPACE $relativePath
+            if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
+              throw "Required package file is missing: $relativePath"
+            }
+          }
+
+          $stageRoot = Join-Path $env:RUNNER_TEMP "agent-global-memory-windows-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          $distRoot = Join-Path $env:GITHUB_WORKSPACE 'dist'
+          $archivePath = Join-Path $distRoot 'agent-global-memory-windows.zip'
+
+          New-Item -ItemType Directory -Path $stageRoot, $distRoot | Out-Null
+          Copy-Item -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'README.md') -Destination (Join-Path $stageRoot 'README.md') -Force
+          Copy-Item -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'docs') -Destination (Join-Path $stageRoot 'docs') -Recurse -Force
+          Copy-Item -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'dim-sum') -Destination (Join-Path $stageRoot 'dim-sum') -Recurse -Force
+          Copy-Item -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'memory') -Destination (Join-Path $stageRoot 'memory') -Recurse -Force
+          Copy-Item -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'scripts') -Destination (Join-Path $stageRoot 'scripts') -Recurse -Force
+          Copy-Item -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'skills') -Destination (Join-Path $stageRoot 'skills') -Recurse -Force
+
+          $optionalEntrypoints = @(
+            '.agents',
+            '.claude',
+            '.codex',
+            '.opencode',
+            'AGENTS.md',
+            'CLAUDE.md',
+            'OPENCODE.md',
+            'opencode.json',
+            'opencode.jsonc'
+          )
+          foreach ($relativePath in $optionalEntrypoints) {
+            $sourcePath = Join-Path $env:GITHUB_WORKSPACE $relativePath
+            if (Test-Path -LiteralPath $sourcePath) {
+              $destinationPath = Join-Path $stageRoot (Split-Path -Leaf $relativePath)
+              Copy-Item -LiteralPath $sourcePath -Destination $destinationPath -Recurse -Force
+            }
+          }
+
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::CreateFromDirectory(
+            $stageRoot,
+            $archivePath,
+            [System.IO.Compression.CompressionLevel]::Optimal,
+            $false
+          )
+          if (-not (Test-Path -LiteralPath $archivePath -PathType Leaf) -or (Get-Item -LiteralPath $archivePath).Length -eq 0) {
+            throw 'Windows package was not created successfully.'
+          }
+
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v7
+        with:
+          name: agent-global-memory-windows
+          path: dist/agent-global-memory-windows.zip
+          if-no-files-found: error
+
+  package-linux:
+    name: Package Linux archive
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Build Linux tarball
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          required_files=(
+            README.md
+            memory/SHARED_INSTRUCTIONS.md
+            scripts/sync-agent-memory.ps1
+            scripts/sync-agent-memory.sh
+            scripts/test-sync-agent-memory.ps1
+            scripts/test-sync-agent-memory.sh
+            scripts/test-regex-builder.mjs
+            scripts/test-discussion-policy.mjs
+            scripts/build-dim-sum-index.mjs
+            scripts/verify-dim-sum-catalog.mjs
+            skills/agent-global-memory/SKILL.md
+            dim-sum/index.json
+            dim-sum/schema.json
+            dim-sum/image-manifest.json
+            docs/regex-builder.html
+            docs/regex-builder.css
+            docs/regex-builder.js
+            docs/regex-engine.js
+            docs/regex-worker.js
+          )
+          for relative_path in "${required_files[@]}"; do
+            if [[ ! -f "$GITHUB_WORKSPACE/$relative_path" ]]; then
+              echo "Required package file is missing: $relative_path" >&2
+              exit 1
+            fi
+          done
+
+          stage_root="$RUNNER_TEMP/agent-global-memory-linux-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          dist_root="$GITHUB_WORKSPACE/dist"
+          archive_path="$dist_root/agent-global-memory-linux.tar.gz"
+
+          mkdir -p "$stage_root" "$dist_root"
+          cp "$GITHUB_WORKSPACE/README.md" "$stage_root/README.md"
+          cp -a "$GITHUB_WORKSPACE/docs" "$stage_root/docs"
+          cp -a "$GITHUB_WORKSPACE/dim-sum" "$stage_root/dim-sum"
+          cp -a "$GITHUB_WORKSPACE/memory" "$stage_root/memory"
+          cp -a "$GITHUB_WORKSPACE/scripts" "$stage_root/scripts"
+          cp -a "$GITHUB_WORKSPACE/skills" "$stage_root/skills"
+
+          optional_entrypoints=(
+            .agents
+            .claude
+            .codex
+            .opencode
+            AGENTS.md
+            CLAUDE.md
+            OPENCODE.md
+            opencode.json
+            opencode.jsonc
+          )
+          for relative_path in "${optional_entrypoints[@]}"; do
+            if [[ -e "$GITHUB_WORKSPACE/$relative_path" ]]; then
+              cp -a "$GITHUB_WORKSPACE/$relative_path" "$stage_root/"
+            fi
+          done
+
+          chmod +x "$stage_root/scripts/"*.sh
+          tar -czf "$archive_path" -C "$stage_root" .
+          if [[ ! -s "$archive_path" ]]; then
+            echo 'Linux package was not created successfully.' >&2
+            exit 1
+          fi
+
+      - name: Upload Linux package
+        uses: actions/upload-artifact@v7
+        with:
+          name: agent-global-memory-linux
+          path: dist/agent-global-memory-linux.tar.gz
+          if-no-files-found: error
+
+  package-dim-sum-photos:
+    name: Package complete dim-sum photo archive
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Build and verify photo ZIP parts
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash ./scripts/build-dim-sum-photo-archives.sh dist
+
+      - name: Upload complete photo archive parts
+        uses: actions/upload-artifact@v7
+        with:
+          name: agent-global-memory-dim-sum-photos
+          path: dist/dim-sum-photos-*.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs:
+      - package-windows
+      - package-linux
+      - package-dim-sum-photos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v7
+
+      - name: Download Windows package
+        uses: actions/download-artifact@v8
+        with:
+          name: agent-global-memory-windows
+          path: dist
+
+      - name: Download Linux package
+        uses: actions/download-artifact@v8
+        with:
+          name: agent-global-memory-linux
+          path: dist
+
+      - name: Download complete photo archive parts
+        uses: actions/download-artifact@v8
+        with:
+          name: agent-global-memory-dim-sum-photos
+          path: dist
+
+      - name: Create and verify release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+
+          tag="v0.0.${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}"
+          windows_asset="$GITHUB_WORKSPACE/dist/agent-global-memory-windows.zip"
+          linux_asset="$GITHUB_WORKSPACE/dist/agent-global-memory-linux.tar.gz"
+          mapfile -t photo_archives < <(find "$GITHUB_WORKSPACE/dist" -maxdepth 1 -type f -name 'dim-sum-photos-*.zip' -print | sort)
+          if (( ${#photo_archives[@]} == 0 )); then
+            echo 'No complete dim-sum photo ZIP parts were downloaded.' >&2
+            exit 1
+          fi
+          for photo_archive in "${photo_archives[@]}"; do
+            unzip -tqq "$photo_archive"
+          done
+
+          if [[ -f "$GITHUB_WORKSPACE/dim-sum/CATALOG_COMPLETE" ]]; then
+            node "$GITHUB_WORKSPACE/scripts/verify-dim-sum-catalog.mjs"
+          else
+            node "$GITHUB_WORKSPACE/scripts/verify-dim-sum-catalog.mjs" --progress
+          fi
+          catalog="$GITHUB_WORKSPACE/dim-sum/index.json"
+          catalog_count="$(jq -r '.total' "$catalog")"
+          if [[ ! "$catalog_count" =~ ^[0-9]+$ ]] || (( catalog_count < 1 )); then
+            echo "Dim-sum catalog count is invalid: $catalog_count" >&2
+            exit 1
+          fi
+          photo_index=$(( (GITHUB_RUN_NUMBER - 1) % catalog_count ))
+          photo_id="$(jq -r ".dishes[$photo_index].id" "$catalog")"
+          photo_name_en="$(jq -r ".dishes[$photo_index].name.en" "$catalog")"
+          photo_name_zh="$(jq -r ".dishes[$photo_index].name.zhHant" "$catalog")"
+          photo_relative="$(jq -r ".dishes[$photo_index].image.path" "$catalog")"
+          photo_source="$GITHUB_WORKSPACE/dim-sum/$photo_relative"
+          photo_asset="$GITHUB_WORKSPACE/dist/${photo_id}-dim-sum-release-photo.png"
+          if [[ ! "$photo_relative" =~ ^images/hk-dish-[0-9]{4}-[a-z0-9-]+\.png$ ]] || [[ ! -s "$photo_source" ]]; then
+            echo "Indexed dim-sum release photo is missing or invalid: $photo_relative" >&2
+            exit 1
+          fi
+          cp "$photo_source" "$photo_asset"
+
+          for asset in "$windows_asset" "$linux_asset" "$photo_asset"; do
+            if [[ ! -s "$asset" ]]; then
+              echo "Release asset is missing or empty: $asset" >&2
+              exit 1
+            fi
+          done
+
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" >/dev/null 2>&1; then
+            echo "Release tag already exists: $tag" >&2
+            exit 1
+          fi
+
+          notes_file="$RUNNER_TEMP/agent-global-memory-release-notes.md"
+          cat > "$notes_file" <<'EOF'
+          This release contains the reviewed Agent Global Memory payload, its
+          installable skill, the PowerShell/Bash synchronizers, and the local
+          ECMAScript regex-builder reference implementation.
+
+          The payload requires a full regex builder in every project and direct
+          access to that complete builder from every search bar. Plain-text
+          search remains the default until regex is explicitly enabled.
+
+          Every app also receives strict per-element anchored appearance editors,
+          infinite translated color pickers, decorated/persistent tab groups,
+          protected pinning, four independent tab-search scopes, and both
+          text-containing and inverse text-excluding bulk-close actions.
+
+          Git and GitHub work is routed only through the `git` and `gh` CLIs.
+          The canonical repository is now Ding-Ding-Projects; installer tests
+          cover safe migration from the former skill ownership marker.
+
+          Agents never ask whether to keep going when the remaining work is
+          already authorized. Progress updates are informational, and agents
+          continue through full implementation, proof, and safe cleanup unless
+          a narrow genuine blocker requires user action.
+
+          In Codex only, authorized bounded task sessions stay under the main
+          chat's active orchestration. Every created task runs useful subagents;
+          the main chat follows up, verifies and incorporates the result, then
+          archives or closes only its owned delegation task. Claude is excluded
+          because it does not provide Codex task sessions.
+
+          It also requires one rolling progress Discussion for meaningful work,
+          a factual changelog Announcement after every successful agent-initiated
+          push, safe pin rotation limited to agent-managed changelogs, and one
+          truthfully maintained GitHub Project item for each active task.
+
+          ## Install targets
+
+          - Claude Code: user rules plus the Claude user skill directory
+          - Codex: user `AGENTS.md` plus the shared Open Agent skill directory
+          - OpenCode: user `AGENTS.md` plus the shared Open Agent skill directory
+
+          The Windows ZIP and Linux tarball are configuration-project installer
+          bundles. Run `status` first, then the matching `install` command from
+          `README.md`. To roll back, run the matching `uninstall` command; it
+          removes only the repository-owned block and skill directory.
+          EOF
+          {
+            printf '\n## Dim-sum release photo\n\n'
+            printf -- '- Dish: **%s · %s** (`%s`)\n' "$photo_name_en" "$photo_name_zh" "$photo_id"
+            printf -- '- Attached asset: `%s`\n' "$(basename "$photo_asset")"
+            printf -- '- Catalog source: `dim-sum/%s`\n' "$photo_relative"
+            printf '\n## Complete dim-sum photo archive\n\n'
+            printf -- '- Attached ZIP parts: `%d`\n' "${#photo_archives[@]}"
+            printf -- '- Tracked PNGs included: `%s`\n' "$catalog_count"
+            printf -- '- Every ZIP part was tested with `unzip -t`; the packaging job also compared the combined entries byte-for-byte by path against `git ls-files`.\n'
+          } >> "$notes_file"
+          printf '\nSource commit: `%s`.\n' "$GITHUB_SHA" >> "$notes_file"
+
+          release_assets=(
+            "$windows_asset#Windows ZIP"
+            "$linux_asset#Linux tar.gz"
+            "$photo_asset#Dim-sum release photo — $photo_name_en · $photo_name_zh"
+          )
+          for photo_archive in "${photo_archives[@]}"; do
+            release_assets+=("$photo_archive#$(basename "$photo_archive")")
+          done
+
+          gh release create "$tag" "${release_assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Agent Global Memory $tag" \
+            --notes-file "$notes_file"
+
+          read -r is_draft is_prerelease < <(
+            gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" --jq '[.draft, .prerelease] | @tsv'
+          )
+          if [[ "$is_draft" != 'false' || "$is_prerelease" != 'false' ]]; then
+            echo "Release $tag is unexpectedly draft or prerelease." >&2
+            exit 1
+          fi
+
+          tag_type="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.type')"
+          tag_target="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha')"
+          if [[ "$tag_type" != 'commit' || "$tag_target" != "$GITHUB_SHA" ]]; then
+            echo "Release tag $tag does not target $GITHUB_SHA." >&2
+            exit 1
+          fi
+
+          expected_photo_asset="$(basename "$photo_asset")"
+          for expected_asset in \
+            'agent-global-memory-windows.zip' \
+            'agent-global-memory-linux.tar.gz' \
+            "$expected_photo_asset"; do
+            if ! gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" \
+              --jq '.assets[].name' | grep -Fxq "$expected_asset"; then
+              echo "Release $tag is missing required asset $expected_asset." >&2
+              exit 1
+            fi
+          done
+          for photo_archive in "${photo_archives[@]}"; do
+            expected_archive_asset="$(basename "$photo_archive")"
+            if ! gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" \
+              --jq '.assets[].name' | grep -Fxq "$expected_archive_asset"; then
+              echo "Release $tag is missing required photo archive $expected_archive_asset." >&2
+              exit 1
+            fi
+          done
+
+  validate-publishing-sources:
+    name: Validate Pages and wiki sources
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Verify tracked publishing sources
+        shell: bash
+        env:
+          ENABLE_HOSTED_PAGES: ${{ vars.ENABLE_HOSTED_PAGES }}
+          ENABLE_NATIVE_WIKI: ${{ vars.ENABLE_NATIVE_WIKI }}
+        run: |
+          set -Eeuo pipefail
+
+          if [[ ! -d docs ]] || ! find docs -type f -print -quit | grep -q .; then
+            echo 'The docs/ directory is missing or empty.' >&2
+            exit 1
+          fi
+
+          mapfile -d '' source_pages < <(git ls-files -z -- 'wiki/*.md')
+          if (( ${#source_pages[@]} == 0 )); then
+            echo 'No tracked wiki/*.md pages were found.' >&2
+            exit 1
+          fi
+
+          if [[ "$ENABLE_HOSTED_PAGES" != 'true' ]]; then
+            echo '::notice::Hosted Pages is disabled because the current GitHub plan does not support Pages from this private repository; docs/ remains the verified publication source.'
+          fi
+          if [[ "$ENABLE_NATIVE_WIKI" != 'true' ]]; then
+            echo '::notice::The native wiki is disabled because the current GitHub plan does not support a wiki for this private repository; wiki/ remains the verified source.'
+          fi
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    needs:
+      - release
+      - validate-publishing-sources
+    if: ${{ vars.ENABLE_HOSTED_PAGES == 'true' }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages-${{ github.repository }}
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Verify static site
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [[ ! -d docs ]] || ! find docs -type f -print -quit | grep -q .; then
+            echo 'The docs/ directory is missing or empty.' >&2
+            exit 1
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  sync-wiki:
+    name: Sync repository wiki
+    needs:
+      - release
+      - validate-publishing-sources
+    if: ${{ vars.ENABLE_NATIVE_WIKI == 'true' }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: wiki-${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Publish tracked wiki pages
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+
+          mapfile -d '' source_pages < <(git ls-files -z -- 'wiki/*.md')
+          if (( ${#source_pages[@]} == 0 )); then
+            echo 'No tracked wiki/*.md pages were found.' >&2
+            exit 1
+          fi
+
+          gh auth setup-git
+          wiki_checkout="$RUNNER_TEMP/agent-global-memory-wiki-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          wiki_url="https://github.com/${GITHUB_REPOSITORY}.wiki.git"
+
+          if ! git clone --quiet "$wiki_url" "$wiki_checkout"; then
+            echo 'The wiki could not be cloned; attempting to initialize its master branch.'
+            mkdir -p "$wiki_checkout"
+            git -C "$wiki_checkout" init --initial-branch=master
+            git -C "$wiki_checkout" remote add origin "$wiki_url"
+          fi
+
+          find "$wiki_checkout" -maxdepth 1 -type f -name '*.md' -delete
+          for source_page in "${source_pages[@]}"; do
+            cp "$source_page" "$wiki_checkout/$(basename "$source_page")"
+          done
+
+          git -C "$wiki_checkout" config user.name 'github-actions[bot]'
+          git -C "$wiki_checkout" config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C "$wiki_checkout" add -A
+
+          if ! git -C "$wiki_checkout" diff --cached --quiet; then
+            git -C "$wiki_checkout" commit -m "Sync wiki from $GITHUB_SHA"
+            git -C "$wiki_checkout" push --set-upstream origin HEAD:master
+          fi
+
+          local_revision="$(git -C "$wiki_checkout" rev-parse HEAD)"
+          remote_revision="$(git -C "$wiki_checkout" ls-remote origin refs/heads/master | awk '{print $1}')"
+          if [[ -z "$remote_revision" || "$local_revision" != "$remote_revision" ]]; then
+            echo 'Wiki verification failed: remote master does not match the synchronized checkout.' >&2
+            exit 1
+          fi

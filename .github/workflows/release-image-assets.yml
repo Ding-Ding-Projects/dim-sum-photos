@@ -1,0 +1,27 @@
+name: Package image release assets
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release tag, for example catalog-v1
+        required: true
+        type: string
+      image_root:
+        description: Runner-local image source path
+        required: true
+        type: string
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package release volumes
+        shell: pwsh
+        run: ./scripts/package-image-release.ps1 -ImageRoot '${{ inputs.image_root }}' -Version '${{ inputs.version }}'
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: gh release create "${{ inputs.version }}" release-${{ inputs.version }}/* --repo "${{ github.repository }}" --title "Dim Sum image catalog ${{ inputs.version }}" --notes "Encrypted split 7z image volumes for the Windows Dim Sum Atlas cache."

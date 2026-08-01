@@ -1,0 +1,14 @@
+{
+  "name": "dim-sum-atlas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Material 3 Electron gallery for the bundled dim-sum catalog.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "validate:data": "node data/validate.mjs"
+  },
+  "devDependencies": {
+    "electron": "^37.0.0"
+  }
+}
