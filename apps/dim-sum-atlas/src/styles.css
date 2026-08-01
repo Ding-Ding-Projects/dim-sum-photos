@@ -25,6 +25,9 @@ dialog button { min-height: 38px; border: 0; border-radius: 999px; padding: 8px 
 .language-controls label { display: grid; gap: 6px; margin: 10px 0; }
 .narrator-controls { margin-top: 14px; padding-top: 12px; border-top: 1px solid #c7d4cc; }
 .narrator-controls p { color: #5f7468; font-size: 12px; }
+.settings-search { display:grid; gap:6px; }
+.settings-search span { display:flex; gap:6px; }
+.settings-search input { flex:1; }
 .changelog-entry { padding: 18px; border-radius: 18px; background: #eef6f0; border: 1px solid #c6dccd; }
 .history-tools { display:flex; flex-wrap:wrap; gap:9px; margin:18px 0; }
 .history-tools input { min-height:38px; border:1px solid #b5c7bc; border-radius:10px; padding:7px 10px; font:inherit; }
