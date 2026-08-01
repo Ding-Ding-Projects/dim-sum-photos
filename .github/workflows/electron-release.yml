@@ -1,0 +1,39 @@
+name: Build Windows Electron release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: apps/dim-sum-atlas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/dim-sum-atlas/package-lock.json
+      - run: npm ci
+      - run: npm run validate:data
+      - name: Package portable Windows app
+        shell: pwsh
+        run: npx electron-packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
+      - name: Zip portable app
+        shell: pwsh
+        run: Compress-Archive -Path 'release/Dim Sum Atlas-win32-x64/*' -DestinationPath 'dim-sum-atlas-win-x64.zip'
+      - name: Publish immutable release
+        working-directory: ${{ github.workspace }}
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $tag = "desktop-$($env:GITHUB_RUN_NUMBER)-$($env:GITHUB_SHA.Substring(0,8))"
+          gh release create $tag "apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip" --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Portable Windows Electron build. Catalog code name: Classic Har Gow · 蝦餃."
