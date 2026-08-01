@@ -3,7 +3,7 @@ param(
   [Parameter(Mandatory=$true)][string]$ImageRoot,
   [string]$Repository = 'Ding-Ding-Projects/dim-sum-photos',
   [string]$Release = 'catalog-v1',
-  [int]$MaxAssetsPerRelease = 1000
+  [int]$MaxAssetsPerRelease = 990
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
