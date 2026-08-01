@@ -16,6 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Validate catalog additions
+        run: node scripts/validate-catalog-additions.mjs
       - name: Prepare site data
         shell: bash
         run: |

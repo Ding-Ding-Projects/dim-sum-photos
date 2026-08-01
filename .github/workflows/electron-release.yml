@@ -22,6 +22,7 @@ jobs:
           cache: npm
           cache-dependency-path: apps/dim-sum-atlas/package-lock.json
       - run: npm ci
+      - run: npm run validate:additions
       - run: npm run validate:data
       - name: Bundle the public catalog into the app
         shell: pwsh
