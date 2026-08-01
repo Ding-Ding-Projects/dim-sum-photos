@@ -45,3 +45,4 @@ dialog button { min-height: 38px; border: 0; border-radius: 999px; padding: 8px 
 .archive-tools label { display: grid; gap: 5px; }
 .archive-tools input, .archive-tools select { min-height: 36px; }
 .archive-output { max-height: 180px; overflow: auto; white-space: pre-wrap; background: #edf3ee; padding: 10px; border-radius: 10px; }
+.image-unavailable { min-height: 160px; background: #e4eee7; object-fit: none; }

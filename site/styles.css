@@ -26,3 +26,4 @@ main, header, nav { gap: var(--appearance-spacing); }
 .regex-guide th, .regex-guide td { padding: 8px; border-bottom: 1px solid color-mix(in srgb, var(--text) 14%, transparent); text-align: left; vertical-align: top; }
 .regex-guide pre { white-space: pre-wrap; }
 .regex-inspector { padding: 10px; margin: 12px 0; border-radius: 12px; background: color-mix(in srgb, var(--green) 16%, transparent); display: grid; gap: 4px; }
+.image-unavailable { min-height: 160px; background: color-mix(in srgb, var(--surface) 70%, #b5c7bc); object-fit: none; }
