@@ -30,6 +30,8 @@
     <section id="about-panel" class="panel hidden"><div class="about-card"><p class="eyebrow">ABOUT THE ATLAS</p><h1>Good food, good stories.</h1><p>Dim Sum Atlas is a local-first gallery for the bundled Hong Kong dim-sum catalog. Every invented origin and fact is marked as fictional catalog lore, so playful storytelling never pretends to be history.</p><div class="about-facts"><span><strong>Material 3</strong> expressive desktop UI</span><span><strong>Local-first</strong> no runtime image fetching</span><span><strong>Accessible</strong> keyboard-ready cards and tabs</span></div></div></section>
   </main>
   <div id="toast" class="toast" role="status"></div>
+  <dialog id="regex-dialog"><form method="dialog"><h2>Regex builder</h2><label>Pattern <input id="regex-pattern" maxlength="256" /></label><label>Flags <input id="regex-flags" maxlength="8" value="i" /></label><p id="regex-status">Plain text search is active.</p><button value="cancel">Cancel</button><button id="apply-regex" value="default">Use regex</button></form></dialog>
+  <dialog id="settings-dialog"><form method="dialog"><h2>Settings</h2><label>Theme <select id="theme"><option>light</option><option>dark</option></select></label><label>Funny level <input id="funny-level" type="range" min="1" max="5" value="3" /></label><p>Funny level styles app messages while keeping facts unchanged.</p><button>Close</button><button id="save-settings" value="default">Save settings</button></form></dialog>
   <script src="./renderer.js"></script>
 </body>
 </html>
