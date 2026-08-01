@@ -39,6 +39,9 @@ jobs:
           New-Item -ItemType Directory -Force 'portable/7z' | Out-Null
           Invoke-WebRequest -Uri 'https://www.7-zip.org/a/7zr.exe' -OutFile 'portable/7z/7z.exe'
           if ((Get-Item 'portable/7z/7z.exe').Length -lt 100000) { throw 'The downloaded portable 7-Zip binary is unexpectedly small.' }
+      - name: Build Windows installer
+        shell: pwsh
+        run: npm run build:installer
       - name: Package portable Windows app
         shell: pwsh
         run: npx --no-install @electron/packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
@@ -59,4 +62,6 @@ jobs:
           $photo = "apps/dim-sum-atlas/$photoName"
           Invoke-WebRequest -Uri "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/$photoName" -OutFile $photo
           $codeName = "$($dish.name.en) · $($dish.name.zhHant)"
-          gh release create $tag "apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip" $photo --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Portable Windows Electron build. Catalog code name: $codeName. Photo asset: $photoName."
+          $assets = @("apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip", $photo) + @(Get-ChildItem 'apps/dim-sum-atlas/dist/*.exe' | ForEach-Object { $_.FullName })
+          if ($assets.Count -lt 3) { throw 'The Windows installer was not produced.' }
+          gh release create $tag $assets --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Windows installer and portable build. Catalog code name: $codeName. Embedded photo asset: $photoName."

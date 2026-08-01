@@ -6,11 +6,21 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "validate:data": "node data/validate.mjs"
+    "validate:data": "node data/validate.mjs",
+    "build:installer": "electron-builder --win nsis --x64"
   },
   "devDependencies": {
-    "@electron/packager": "^20.0.4",
-    "electron": "^37.0.0"
+    "@electron/packager": "20.0.4",
+    "electron": "^37.0.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.dingdingprojects.dimsumatlas",
+    "productName": "Dim Sum Atlas",
+    "asar": true,
+    "files": ["src/**/*", "data/**/*", "catalog.json", "portable/**/*", "package.json"],
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
+    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true }
   },
   "allowScripts": {
     "electron@37.10.3": true
