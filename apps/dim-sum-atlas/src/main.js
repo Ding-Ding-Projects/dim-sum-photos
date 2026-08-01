@@ -6,7 +6,7 @@ const os = require('os');
 const { spawnSync } = require('child_process');
 const https = require('https');
 const IMAGE_RELEASE_BASE = 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/';
-function releaseUrlForDish(dish) { const number = Number(String(dish.id || '').match(/(\d+)$/)?.[1] || 1); const part = Math.floor((number - 1) / 1000) + 1; const tag = part === 1 ? 'catalog-v1' : `catalog-v1-part-${String(part).padStart(3, '0')}`; return `https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/${tag}/${path.basename(dish.image.path)}`; }
+function releaseUrlForDish(dish) { const number = Number(String(dish.id || '').match(/(\d+)$/)?.[1] || 1); const part = number <= 995 ? 1 : Math.floor((number - 996) / 990) + 2; const tag = part === 1 ? 'catalog-v1' : `catalog-v1-part-${String(part).padStart(3, '0')}`; return `https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/${tag}/${path.basename(dish.image.path)}`; }
 
 function createWindow() {
   const window = new BrowserWindow({
