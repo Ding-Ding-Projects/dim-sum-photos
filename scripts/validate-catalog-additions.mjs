@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = path.resolve('catalog');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'catalog');
 const files = fs.readdirSync(root).filter((file) => /^additions-.*\.json$/i.test(file)).sort();
 const ids = new Set();
 let total = 0;
