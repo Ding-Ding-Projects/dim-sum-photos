@@ -3,3 +3,4 @@ apps/*/node_modules/
 release-*/
 *.7z
 *.zip
+upload-logs/
