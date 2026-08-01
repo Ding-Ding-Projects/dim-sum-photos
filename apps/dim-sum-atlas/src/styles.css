@@ -11,6 +11,10 @@ main { padding:0 34px 48px; } .hero { max-width:1300px; margin:48px auto 30px; d
 .hidden { display:none; } .page-heading,.about-card { max-width:1300px; margin:48px auto 26px; } .page-heading h1,.about-card h1 { font-size:44px; } .about-card { padding:48px; border:1px solid var(--outline); border-radius:var(--radius); background:linear-gradient(135deg,#1d2a26,#151b1b); } .about-facts { display:flex; gap:14px; flex-wrap:wrap; margin-top:30px; } .about-facts span { padding:16px; border-radius:14px; background:#ffffff08; color:var(--muted); } .about-facts strong { display:block; color:var(--accent); margin-bottom:4px; } .toast { position:fixed; right:26px; bottom:24px; background:var(--surface-3); border:1px solid var(--outline); border-radius:14px; padding:14px 18px; opacity:0; transform:translateY(10px); transition:.2s; pointer-events:none; } .toast.show { opacity:1; transform:none; }
 @media (max-width:1100px) { .content-grid { grid-template-columns:1fr; } .detail { position:static; } }
 .dialog-backdrop { background: rgba(0,0,0,.35); }
+dialog .regex-guide { margin-top: 14px; max-height: 360px; overflow: auto; border-top: 1px solid #c7d4cc; padding-top: 12px; }
+dialog .regex-guide table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+dialog .regex-guide th, dialog .regex-guide td { text-align: left; padding: 6px; border-bottom: 1px solid #d6e0da; vertical-align: top; }
+dialog .regex-guide textarea { min-height: 72px; }
 dialog { border: 0; border-radius: 24px; padding: 24px; color: #24312b; box-shadow: 0 18px 60px rgba(0,0,0,.24); max-width: 420px; }
 dialog::backdrop { background: rgba(18, 27, 23, .36); }
 dialog form { display: grid; gap: 14px; min-width: 280px; }
