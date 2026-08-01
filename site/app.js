@@ -56,3 +56,17 @@ function mountTabManagement() {
   $('tab-search').oninput = renderOverflow; $('tab-overflow').onclick = () => { renderOverflow(); $('tab-overflow-menu').classList.toggle('hidden'); }; arrange();
 }
 document.addEventListener('DOMContentLoaded', mountTabManagement);
+
+function mountChangelogTools() {
+  const view = $('changelog-view'); if (!view || view.querySelector('.changelog-tools')) return;
+  const tools = document.createElement('div'); tools.className = 'changelog-tools';
+  tools.innerHTML = '<label>Search releases <input id="changelog-search" type="search" placeholder="Search changelog text"><button id="changelog-regex" type="button" aria-label="Build a regex for changelog search">.*</button></label><label>From <input id="changelog-from" type="date"></label><label>To <input id="changelog-to" type="date"></label><button id="changelog-export" type="button">Export view</button><p id="changelog-empty" class="hidden" role="status">No releases match the current filters.</p>';
+  view.insertBefore(tools, view.querySelector('.changelog-card'));
+  const card = view.querySelector('.changelog-card'); const original = card.outerHTML;
+  const apply = () => { const text = card.textContent.toLowerCase(); const q = ($('changelog-search').value || '').toLowerCase(); const from = $('changelog-from').value; const to = $('changelog-to').value; const date = card.querySelector('small')?.textContent.match(/\d{4}-\d{2}-\d{2}/)?.[0] || ''; let queryOk = !q || text.includes(q); if (state.regex) { try { queryOk = state.regex.test(card.textContent); state.regex.lastIndex = 0; } catch { queryOk = false; } } const ok = queryOk && (!from || date >= from) && (!to || date <= to); card.classList.toggle('hidden', !ok); $('changelog-empty').classList.toggle('hidden', ok); return ok; };
+  ['changelog-search','changelog-from','changelog-to'].forEach(id => $(id).addEventListener('input', apply));
+  $('changelog-regex').onclick = () => { $('regex').click(); notify('Use the regex builder, then apply the pattern to the changelog search field.'); };
+  $('changelog-export').onclick = () => { if (!apply()) return notify('There are no releases to export.'); const blob = new Blob([`Dim Sum Atlas changelog export\n\n${card.textContent.trim()}\n`], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'dim-sum-atlas-changelog.txt'; a.click(); notify('Exported the filtered changelog view.'); };
+}
+document.addEventListener('DOMContentLoaded', mountChangelogTools);
+document.addEventListener('DOMContentLoaded', () => { $('apply-regex')?.addEventListener('click', () => setTimeout(() => $('changelog-search')?.dispatchEvent(new Event('input')), 0)); });
