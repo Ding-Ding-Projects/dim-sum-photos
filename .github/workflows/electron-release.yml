@@ -36,6 +36,11 @@ jobs:
         shell: pwsh
         run: |
           $tag = "desktop-$($env:GITHUB_RUN_NUMBER)-$($env:GITHUB_SHA.Substring(0,8))"
-          $photo = "apps/dim-sum-atlas/hk-dish-0001-classic-har-gow.png"
-          Invoke-WebRequest -Uri "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/hk-dish-0001-classic-har-gow.png" -OutFile $photo
-          gh release create $tag "apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip" $photo --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Portable Windows Electron build. Catalog code name: Classic Har Gow · 蝦餃. Photo asset: hk-dish-0001-classic-har-gow.png."
+          $catalog = Get-Content "catalog/index.json" -Raw | ConvertFrom-Json
+          $verified = @($catalog.dishes | Where-Object { $_.image.path })
+          $dish = $verified[($env:GITHUB_RUN_NUMBER - 1) % $verified.Count]
+          $photoName = Split-Path $dish.image.path -Leaf
+          $photo = "apps/dim-sum-atlas/$photoName"
+          Invoke-WebRequest -Uri "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/$photoName" -OutFile $photo
+          $codeName = "$($dish.name.en) · $($dish.name.zhHant)"
+          gh release create $tag "apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip" $photo --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Portable Windows Electron build. Catalog code name: $codeName. Photo asset: $photoName."
