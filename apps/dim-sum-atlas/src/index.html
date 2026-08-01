@@ -14,7 +14,7 @@
   <nav class="tabs" role="tablist" aria-label="Primary navigation">
     <button class="tab active" role="tab" aria-selected="true" data-tab="gallery">Gallery <span id="dish-count">0</span></button>
     <button class="tab" role="tab" aria-selected="false" data-tab="favorites">Favorites <span id="favorite-count">0</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="changelog">Changelog</button><button class="tab" role="tab" aria-selected="false" data-tab="about">About</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="changelog">Changelog</button><button class="tab" role="tab" aria-selected="false" data-tab="history">History</button><button class="tab" role="tab" aria-selected="false" data-tab="about">About</button>
   </nav>
   <main>
     <section id="gallery-panel" class="panel" role="tabpanel">
@@ -29,6 +29,7 @@
     <section id="favorites-panel" class="panel hidden"><div class="page-heading"><p class="eyebrow">YOUR TABLE</p><h1>Saved dishes</h1><p>Keep a short list of dishes you want to remember.</p></div><div class="gallery" id="favorites-gallery"></div></section>
     <section id="about-panel" class="panel hidden"><div class="about-card"><p class="eyebrow">ABOUT THE ATLAS</p><h1>Good food, good stories.</h1><p>Dim Sum Atlas is a local-first gallery for the bundled Hong Kong dim-sum catalog. Every invented origin and fact is marked as fictional catalog lore, so playful storytelling never pretends to be history.</p><div class="about-facts"><span><strong>Material 3</strong> expressive desktop UI</span><span><strong>Local-first</strong> no runtime image fetching</span><span><strong>Accessible</strong> keyboard-ready cards and tabs</span></div></div></section>
     <section id="changelog-panel" class="panel hidden"><div class="about-card"><p class="eyebrow">RELEASE NOTES</p><h1>Changelog</h1><p>Every released version is listed here with its date and verified shipped features.</p><article class="changelog-entry"><h2>0.1.0 · Spinach Shrimp Dumpling · 菠菜蝦餃</h2><p>Windows gallery, fictional lore, favorites, regex search, bulk image export, ZIP, encrypted 7z, settings, and portable release packaging.</p><small>Release date: 2026-08-01</small></article></div></section>
+    <section id="history-panel" class="panel hidden"><div class="about-card"><p class="eyebrow">LOCAL ACTIVITY</p><h1>History</h1><p>Activity stays in this Windows profile and can be searched or exported.</p><div class="history-tools"><input id="history-search" type="search" placeholder="Search history" aria-label="Search history" /><input id="history-from" type="date" aria-label="History from" /><input id="history-to" type="date" aria-label="History to" /><button id="history-export">Export history</button></div><div id="history-list"></div></div></section>
   </main>
   <div id="toast" class="toast" role="status"></div>
   <dialog id="regex-dialog"><form method="dialog"><h2>Regex builder</h2><label>Pattern <input id="regex-pattern" maxlength="256" /></label><label>Flags <input id="regex-flags" maxlength="8" value="i" /></label><p id="regex-status">Plain text search is active.</p><button value="cancel">Cancel</button><button id="apply-regex" value="default">Use regex</button></form></dialog>
