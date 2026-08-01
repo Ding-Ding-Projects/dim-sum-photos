@@ -23,6 +23,27 @@ function mountLanguageControls() { const form = $('settings-dialog')?.querySelec
 function mountNarratorControls() { const form = $('settings-dialog')?.querySelector('form'); if (!form || form.querySelector('.narrator-controls')) return; const section = document.createElement('section'); section.className = 'narrator-controls'; section.innerHTML = '<h3>Optional narrator</h3><p>Off by default. Speech is serialized so announcements never overlap.</p><label><input id="narrator-enabled" type="checkbox"> Narrate app events</label><label>Voice language<select id="narrator-language"><option value="en">English</option><option value="yue">Cantonese</option><option value="both">Both</option></select></label>'; form.append(section); const saved = JSON.parse(localStorage.getItem('dim-sum-narrator') || '{}'); $('narrator-enabled').checked = saved.enabled === true; $('narrator-language').value = saved.language || 'en'; const save = () => localStorage.setItem('dim-sum-narrator', JSON.stringify({ enabled: $('narrator-enabled').checked, language: $('narrator-language').value })); $('narrator-enabled').onchange = save; $('narrator-language').onchange = save; }
 function mountSettingsSearch() { const form = $('settings-dialog')?.querySelector('form'); if (!form || form.querySelector('.settings-search')) return; const wrap = document.createElement('label'); wrap.className = 'settings-search'; wrap.innerHTML = 'Find settings <span><input id="settings-search" type="search" placeholder="Search settings" aria-label="Search settings"><button id="settings-regex" type="button" aria-label="Build a regex for settings">.*</button></span>'; form.insertBefore(wrap, form.firstChild); const filter = () => { const q = ($('settings-search').value || '').toLowerCase(); form.querySelectorAll('label, .language-controls, .narrator-controls').forEach(node => { if (node === wrap) return; node.hidden = Boolean(q) && !node.textContent.toLowerCase().includes(q); }); }; $('settings-search').oninput = filter; $('settings-regex').onclick = () => { $('regex-button').click(); toast('Build a pattern for the settings search, then type it into the settings field.'); }; }
 mountLanguageControls();
+function applyFunnyCopy() {
+  const settings = JSON.parse(localStorage.getItem('dim-sum-language-settings') || '{"language":"en","funnyEn":"2","funnyYue":"2"}');
+  const mode = settings.language || 'en';
+  const enLevel = Number(settings.funnyEn || 2);
+  const yueLevel = Number(settings.funnyYue || 2);
+  const hero = document.querySelector('.hero-copy');
+  if (!hero) return;
+  const en = enLevel >= 4
+    ? 'Browse the atlas, because every steamer basket deserves a proper introduction.'
+    : enLevel >= 3
+      ? 'Browse every dish with ingredients, allergens, and a little tea-house mischief.'
+      : 'Browse every dish in the atlas, with ingredients, allergens, and fictional tea-house lore.';
+  const yue = yueLevel >= 4
+    ? '逐款睇點心，蒸籠入面每位選手都有自己嘅出場介紹㗎。'
+    : yueLevel >= 3
+      ? '逐款睇材料、過敏原，同埋少少茶樓笑料。'
+      : '逐款睇材料、過敏原，同埋標明係虛構嘅茶樓故事。';
+  hero.textContent = mode === 'yue' ? yue : mode === 'bilingual' ? `${en} · ${yue}` : en;
+}
+applyFunnyCopy();
+document.querySelectorAll('#language-mode, #funny-en, #funny-yue').forEach(control => control.addEventListener('input', applyFunnyCopy));
 mountNarratorControls();
 mountSettingsSearch();
 function bindHistory() { ['history-search','history-from','history-to'].forEach(id => $(id)?.addEventListener('input', renderHistory)); $('history-export')?.addEventListener('click', () => { if (!state.history.length) return toast('There is no history to export.'); const body = state.history.map(x => `${x.at}\t${x.action}\t${x.message}`).join('\n'); const blob = new Blob([body], {type:'text/plain'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'dim-sum-atlas-history.txt'; link.click(); recordHistory('export', 'Exported local history'); }); }
