@@ -15,6 +15,7 @@ main, header, nav { gap: var(--appearance-spacing); }
 .appearance-actions button { min-height: 36px; }
 .regex-guide { max-height: 420px; overflow: auto; }
 .regex-guide table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.tab-management{margin-left:auto;display:flex;align-items:center;gap:8px;position:relative}.tab-search{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:5px 8px;color:#aab6af}.tab-search span{font-size:11px}.tab-search input{width:120px;background:transparent;border:0;color:inherit;outline:0}.tab-overflow-menu{position:absolute;right:0;top:44px;z-index:5;min-width:180px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:0 12px 30px #0008}.tab-overflow-menu button{display:block;width:100%;text-align:left;border:0}.tab-overflow-menu span{display:block;padding:8px;color:#aab6af;font-size:12px}@media(max-width:700px){.tab-management{width:100%;margin:10px 0 0}.tab-search{flex:1}.tab-search input{width:100%}}
 .regex-guide th, .regex-guide td { padding: 8px; border-bottom: 1px solid color-mix(in srgb, var(--text) 14%, transparent); text-align: left; vertical-align: top; }
 .regex-guide pre { white-space: pre-wrap; }
 .regex-inspector { padding: 10px; margin: 12px 0; border-radius: 12px; background: color-mix(in srgb, var(--green) 16%, transparent); display: grid; gap: 4px; }

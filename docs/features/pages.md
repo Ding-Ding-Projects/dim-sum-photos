@@ -1,6 +1,6 @@
 # Pages deployment
 
-The Pages workflow copies the catalog index into the static site, publishes the Material gallery, and deploys on every `main` push or manual dispatch. The public site includes gallery, favorites, changelog, about, settings, notifications, bulk selection, manifest export, and regex search.
+The Pages workflow copies the catalog index into the static site, publishes the Material gallery, and deploys on every `main` push or manual dispatch. The public site includes gallery, favorites, changelog, about, settings, notifications, bulk selection, manifest export, and regex search. Its browser-style tab strip persists order and pinned state, provides a local open-tab search, and exposes an overflow menu for narrow layouts. Right-clicking a tab toggles its pinned state.
 
 ## Failure modes and security
 
