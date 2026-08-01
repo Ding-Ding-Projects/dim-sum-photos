@@ -25,7 +25,7 @@ jobs:
       - run: npm run validate:data
       - name: Package portable Windows app
         shell: pwsh
-        run: npx electron-packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
+        run: npx --no-install @electron/packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
       - name: Zip portable app
         shell: pwsh
         run: Compress-Archive -Path 'release/Dim Sum Atlas-win32-x64/*' -DestinationPath 'dim-sum-atlas-win-x64.zip'
@@ -36,4 +36,6 @@ jobs:
         shell: pwsh
         run: |
           $tag = "desktop-$($env:GITHUB_RUN_NUMBER)-$($env:GITHUB_SHA.Substring(0,8))"
-          gh release create $tag "apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip" --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Portable Windows Electron build. Catalog code name: Classic Har Gow · 蝦餃."
+          $photo = "apps/dim-sum-atlas/hk-dish-0001-classic-har-gow.png"
+          Invoke-WebRequest -Uri "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/hk-dish-0001-classic-har-gow.png" -OutFile $photo
+          gh release create $tag "apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip" $photo --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Portable Windows Electron build. Catalog code name: Classic Har Gow · 蝦餃. Photo asset: hk-dish-0001-classic-har-gow.png."

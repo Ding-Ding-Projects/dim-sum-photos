@@ -9,6 +9,7 @@
     "validate:data": "node data/validate.mjs"
   },
   "devDependencies": {
+    "@electron/packager": "^20.0.4",
     "electron": "^37.0.0"
   },
   "allowScripts": {
