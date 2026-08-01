@@ -38,3 +38,6 @@ dialog button { min-height: 38px; border: 0; border-radius: 999px; padding: 8px 
 .electron-tab-search input { min-height:34px; width:130px; border:1px solid #b5c7bc; border-radius:10px; padding:6px 9px; font:inherit; }
 .electron-tab-search > div { position:absolute; right:0; top:40px; z-index:4; min-width:160px; padding:6px; background:#fff; border:1px solid #c7d4cc; border-radius:12px; box-shadow:0 10px 25px #18312622; }
 .electron-tab-search > div button { display:block; width:100%; text-align:left; margin:2px 0; }
+.changelog-tools { display:flex; flex-wrap:wrap; gap:9px; margin:18px 0; }
+.changelog-tools input { min-height:38px; border:1px solid #b5c7bc; border-radius:10px; padding:7px 10px; font:inherit; }
+.changelog-tools input[type=search] { flex:1; min-width:220px; }
