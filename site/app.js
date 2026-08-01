@@ -1,7 +1,7 @@
 const state = { dishes: [], query: '', category: 'All', regex: null, limit: 120, selected: new Set(), favorites: new Set(JSON.parse(localStorage.getItem('dim-sum-favorites') || '[]')), notices: JSON.parse(localStorage.getItem('dim-sum-notices') || '[]'), settings: JSON.parse(localStorage.getItem('dim-sum-settings') || '{}') };
 const $ = id => document.getElementById(id);
 const fiction = d => ({ origin: `This is an invented origin for ${d.name.en}: it is said to have begun in a tea-house kitchen during the first kettle of the day.`, facts: [`Fictional fact: the kitchen nickname is “the little table diplomat”.`, `Fictional ingredient note: this entry lists ${(d.ingredients || []).join(', ') || 'its catalogued ingredients'}.`, 'Fictional provenance note: this lore is generated from the catalog record id.'] });
-const image = d => `https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/${(d.image?.path || '').split('/').pop()}`;
+const image = d => { const number = Number(String(d.id || '').match(/(\d+)$/)?.[1] || 1); const part = Math.floor((number - 1) / 1000) + 1; const tag = part === 1 ? 'catalog-v1' : `catalog-v1-part-${String(part).padStart(3, '0')}`; return `https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/${tag}/${(d.image?.path || '').split('/').pop()}`; };
 function notify(message) { state.notices.unshift({ message, at: new Date().toISOString() }); state.notices = state.notices.slice(0, 30); localStorage.setItem('dim-sum-notices', JSON.stringify(state.notices)); $('notification-count').textContent = state.notices.length; $('toast').textContent = message; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2600); }
 function matches(d) { const text = JSON.stringify(d).toLowerCase(); if (state.regex) { try { return state.regex.test(text); } catch { return false; } } return !state.query || text.includes(state.query.toLowerCase()); }
 function visible() { return state.dishes.filter(d => (state.category === 'All' || d.category === state.category) && matches(d)); }
@@ -37,4 +37,4 @@ function upgradeBulkExportFormats() { const button = $('export-json'); if (!butt
 setTimeout(upgradeBulkExportFormats, 1000);
 const notifyWithSurpriseImage = notify;
 notify = message => { notifyWithSurpriseImage(message); if (message.startsWith('Dim sum surprise') && state.dishes.length) { const dish = state.dishes[Math.floor(Math.random() * state.dishes.length)]; const image = document.createElement('img'); image.src = imageUrlForSurprise(dish); image.alt = `${dish.name.en}, ${dish.name.zhHant || ''}`; image.className = 'surprise-image'; $('toast').append(image); setTimeout(() => image.remove(), 5200); } };
-function imageUrlForSurprise(dish) { return `https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/${(dish.image?.path || '').split('/').pop()}`; }
+function imageUrlForSurprise(dish) { return image(dish); }
