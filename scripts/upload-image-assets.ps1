@@ -12,6 +12,16 @@ if (-not (Test-Path -LiteralPath $root -PathType Container)) { throw "Image root
 $files = @(Get-ChildItem -LiteralPath $root -File -Filter '*.png' | Sort-Object Name)
 $remaining = $files
 $part = 1
+function Upload-WithBackoff([string]$Tag, [IO.FileInfo]$File) {
+  for ($attempt = 1; $attempt -le 10; $attempt++) {
+    & gh release upload $Tag $File.FullName --repo $Repository
+    if ($LASTEXITCODE -eq 0) { return }
+    $delay = [Math]::Min(300, 15 * $attempt)
+    Write-Warning "Upload failed for $($File.Name) on attempt $attempt; retrying in $delay seconds."
+    Start-Sleep -Seconds $delay
+  }
+  throw "Upload failed after retry budget for $($File.Name)"
+}
 while ($remaining.Count -gt 0) {
   $tag = if ($part -eq 1) { $Release } else { "$Release-part-{0:D3}" -f $part }
   $exists = gh release view $tag --repo $Repository --json assets 2>$null
@@ -30,8 +40,7 @@ while ($remaining.Count -gt 0) {
   }
   Write-Host "Release $tag has $($uploaded.Count) assets; uploading $($batch.Count)."
   foreach ($file in $batch) {
-    gh release upload $tag $file.FullName --repo $Repository
-  if ($LASTEXITCODE -ne 0) { throw "Upload failed for $($file.Name)" }
+    Upload-WithBackoff $tag $file
   Write-Host "Uploaded $($file.Name)"
   }
   $remaining = @($remaining | Select-Object -Skip $batch.Count)
