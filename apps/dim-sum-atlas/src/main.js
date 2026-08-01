@@ -111,6 +111,23 @@ ipcMain.handle('export:records', async (_event, { records, format, archive, pass
 
 ipcMain.handle('archive:capabilities', () => ({ platform: process.platform, sevenZip: Boolean(find7z()), operations: ['add', 'extract', 'list', 'test', 'update', 'delete', 'benchmark'], encryption: Boolean(find7z()) }));
 
+ipcMain.handle('archive:run', (_event, { operation, archivePath, inputPath, outputPath, password }) => {
+  if (process.platform !== 'win32') throw new Error('Archive operations are supported on Windows only.');
+  const sevenZip = find7z();
+  const allowed = new Set(['add', 'extract', 'list', 'test', 'update', 'delete', 'benchmark']);
+  if (!sevenZip || !allowed.has(operation)) throw new Error('Unsupported 7z operation or 7z.exe is unavailable.');
+  if (operation !== 'benchmark' && !archivePath) throw new Error('An archive path is required.');
+  const args = [operation === 'add' ? 'a' : operation === 'extract' ? 'x' : operation === 'list' ? 'l' : operation === 'test' ? 't' : operation === 'update' ? 'u' : operation === 'delete' ? 'd' : 'b'];
+  if (operation !== 'benchmark') args.push(archivePath);
+  if (inputPath) args.push(inputPath);
+  if (operation === 'extract' && outputPath) args.push(`-o${outputPath}`);
+  if (password) args.push(`-p${password}`, '-mhe=on');
+  args.push('-y');
+  const result = spawnSync(sevenZip, args, { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout || `7z ${operation} failed.`);
+  return { operation, output: result.stdout, exitCode: result.status };
+});
+
 app.whenReady().then(() => {
   if (process.platform !== 'win32') {
     dialog.showErrorBox('Windows only', 'Dim Sum Atlas is a Windows-only desktop app.');

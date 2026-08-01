@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('atlas', {
   ensureImage: (image) => ipcRenderer.invoke('image:ensure', image),
   exportRecords: (options) => ipcRenderer.invoke('export:records', options),
   archiveCapabilities: () => ipcRenderer.invoke('archive:capabilities')
+  , runArchive: (options) => ipcRenderer.invoke('archive:run', options)
 });
