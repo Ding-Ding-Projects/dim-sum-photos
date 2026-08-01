@@ -69,3 +69,4 @@ jobs:
           $assets = @("apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip", $photo) + @(Get-ChildItem 'apps/dim-sum-atlas/dist/*.exe' | ForEach-Object { $_.FullName })
           if ($assets.Count -lt 3) { throw 'The Windows installer was not produced.' }
           gh release create $tag $assets --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Windows installer and portable build. Catalog code name: $codeName. Embedded photo asset: $photoName."
+          gh release edit $tag --repo "$env:GITHUB_REPOSITORY" --draft=false --latest
