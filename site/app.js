@@ -54,15 +54,15 @@ function mountTabManagement() {
   const tabs = [...document.querySelectorAll('#tabs > button')];
   if (!tabs.length || document.querySelector('.tab-management')) return;
   const host = document.createElement('div'); host.className = 'tab-management';
-  host.innerHTML = '<label class="tab-search"><span>Find tabs</span><input id="tab-search" type="search" placeholder="Find open tab" aria-label="Find open tab"></label><button id="tab-overflow" type="button">More</button><div id="tab-overflow-menu" class="tab-overflow-menu hidden" role="menu"></div>';
+  host.innerHTML = '<label class="tab-search"><span>Find tabs</span><input id="tab-search" type="search" placeholder="Find open tab" aria-label="Find open tab"><button id="tab-regex" type="button" aria-label="Build a regex for open tabs">.*</button></label><button id="tab-overflow" type="button">More</button><div id="tab-overflow-menu" class="tab-overflow-menu hidden" role="menu"></div>';
   $('tabs').append(host);
   const saved = JSON.parse(localStorage.getItem('dim-sum-tabs') || '{}');
   const order = saved.order || tabs.map(t => t.dataset.view); const pins = new Set(saved.pins || []);
   const save = () => localStorage.setItem('dim-sum-tabs', JSON.stringify({ order, pins: [...pins] }));
   const arrange = () => { order.sort((a,b) => Number(pins.has(b))-Number(pins.has(a)) || order.indexOf(a)-order.indexOf(b)); order.forEach(view => $('tabs').append(tabs.find(t => t.dataset.view === view))); save(); };
-  const renderOverflow = () => { const q = ($('tab-search').value || '').toLowerCase(); const menu = $('tab-overflow-menu'); const shown = tabs.filter(t => t.textContent.toLowerCase().includes(q)); menu.innerHTML = shown.map(t => `<button type="button" role="menuitem" data-overflow-view="${t.dataset.view}">${pins.has(t.dataset.view) ? 'Pinned · ' : ''}${t.textContent.trim()}</button>`).join('') || '<span>No matching open tabs.</span>'; menu.querySelectorAll('[data-overflow-view]').forEach(b => b.onclick = () => tabs.find(t => t.dataset.view === b.dataset.overflowView).click()); };
+  const renderOverflow = () => { const q = ($('tab-search').value || '').toLowerCase(); const menu = $('tab-overflow-menu'); const shown = tabs.filter(t => { const text = t.textContent.toLowerCase(); if (state.regex) { try { state.regex.lastIndex = 0; return state.regex.test(t.textContent); } catch { return false; } } return !q || text.includes(q); }); menu.innerHTML = shown.map(t => `<button type="button" role="menuitem" data-overflow-view="${t.dataset.view}">${pins.has(t.dataset.view) ? 'Pinned · ' : ''}${t.textContent.trim()}</button>`).join('') || '<span>No matching open tabs.</span>'; menu.querySelectorAll('[data-overflow-view]').forEach(b => b.onclick = () => tabs.find(t => t.dataset.view === b.dataset.overflowView).click()); };
   tabs.forEach(tab => { tab.title = 'Right-click to pin or reorder this tab'; tab.addEventListener('contextmenu', e => { e.preventDefault(); pins.has(tab.dataset.view) ? pins.delete(tab.dataset.view) : pins.add(tab.dataset.view); arrange(); notify(`${pins.has(tab.dataset.view) ? 'Pinned' : 'Unpinned'} ${tab.textContent.trim()}.`); }); });
-  $('tab-search').oninput = renderOverflow; $('tab-overflow').onclick = () => { renderOverflow(); $('tab-overflow-menu').classList.toggle('hidden'); }; arrange();
+  $('tab-search').oninput = () => { state.regex = null; renderOverflow(); }; $('tab-regex').onclick = () => { $('regex').click(); notify('Use the regex builder for the open-tab search.'); }; $('tab-overflow').onclick = () => { renderOverflow(); $('tab-overflow-menu').classList.toggle('hidden'); }; arrange();
 }
 document.addEventListener('DOMContentLoaded', mountTabManagement);
 
@@ -78,4 +78,4 @@ function mountChangelogTools() {
   $('changelog-export').onclick = () => { if (!apply()) return notify('There are no releases to export.'); const blob = new Blob([`Dim Sum Atlas changelog export\n\n${card.textContent.trim()}\n`], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'dim-sum-atlas-changelog.txt'; a.click(); notify('Exported the filtered changelog view.'); };
 }
 document.addEventListener('DOMContentLoaded', mountChangelogTools);
-document.addEventListener('DOMContentLoaded', () => { $('apply-regex')?.addEventListener('click', () => setTimeout(() => $('changelog-search')?.dispatchEvent(new Event('input')), 0)); });
+document.addEventListener('DOMContentLoaded', () => { $('apply-regex')?.addEventListener('click', () => setTimeout(() => { $('changelog-search')?.dispatchEvent(new Event('input')); $('tab-search')?.dispatchEvent(new Event('input')); }, 0)); });
