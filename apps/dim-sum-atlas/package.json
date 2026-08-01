@@ -7,6 +7,7 @@
   "scripts": {
     "start": "electron .",
     "validate:data": "node data/validate.mjs",
+    "validate:additions": "node ../../scripts/validate-catalog-additions.mjs",
     "build:installer": "electron-builder --win nsis --x64"
   },
   "devDependencies": {
