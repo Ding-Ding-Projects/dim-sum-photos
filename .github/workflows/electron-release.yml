@@ -33,6 +33,12 @@ jobs:
             $catalog.dishes = @($catalog.dishes) + @($additions.dishes)
           }
           $catalog | ConvertTo-Json -Depth 20 | Set-Content 'catalog.json' -Encoding utf8
+      - name: Bundle portable 7-Zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force 'portable/7z' | Out-Null
+          Invoke-WebRequest -Uri 'https://www.7-zip.org/a/7zr.exe' -OutFile 'portable/7z/7z.exe'
+          if ((Get-Item 'portable/7z/7z.exe').Length -lt 100000) { throw 'The downloaded portable 7-Zip binary is unexpectedly small.' }
       - name: Package portable Windows app
         shell: pwsh
         run: npx --no-install @electron/packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
