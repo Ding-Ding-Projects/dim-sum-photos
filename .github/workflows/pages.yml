@@ -19,7 +19,7 @@ jobs:
       - name: Prepare site data
         shell: bash
         run: |
-          node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('catalog/index.json'));const a=JSON.parse(fs.readFileSync('catalog/additions-3009-3030.json'));const seen=new Set(c.dishes.map(d=>d.id));c.dishes.push(...a.dishes.filter(d=>!seen.has(d.id)));fs.writeFileSync('site/catalog.json',JSON.stringify(c,null,2));"
+          node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('catalog/index.json'));const seen=new Set(c.dishes.map(d=>d.id));for(const f of fs.readdirSync('catalog').filter(f=>/^additions-.*\\.json$/i.test(f)).sort()){const a=JSON.parse(fs.readFileSync('catalog/'+f));for(const d of a.dishes||[])if(!seen.has(d.id)){c.dishes.push(d);seen.add(d.id)}}fs.writeFileSync('site/catalog.json',JSON.stringify(c,null,2));"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

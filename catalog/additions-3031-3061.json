@@ -1,0 +1,1075 @@
+{
+  "dishes": [
+    {
+      "id": "hk-dish-3031",
+      "slug": "matcha-har-gow",
+      "name": {
+        "en": "Matcha Har Gow",
+        "zhHant": "抹茶蝦餃"
+      },
+      "jyutping": "mut3 caa4 haa1 gaau2",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-steamed-dim-sum",
+      "description": {
+        "en": "Matcha Har Gow is a matcha-themed steamed dumpling with shrimp and translucent wrapper.",
+        "yue": "抹茶蝦餃係抹茶主題蒸點，蝦肉同晶瑩外皮夾埋一齊。"
+      },
+      "ingredients": [
+        "shrimp",
+        "wheat starch",
+        "matcha powder"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "shellfish",
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3031-matcha-har-gow.png",
+        "alt": {
+          "en": "Matcha Har Gow steamed dumpling",
+          "yue": "抹茶蝦餃蒸點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Har Gow dim sum, natural Hong Kong tea-house food photography, steamed shrimp dumpling with a subtle green matcha wrapper, ceramic basket, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3032",
+      "slug": "matcha-siu-mai",
+      "name": {
+        "en": "Matcha Siu Mai",
+        "zhHant": "抹茶燒賣"
+      },
+      "jyutping": "mut3 caa4 siu1 maai6",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-steamed-dim-sum",
+      "description": {
+        "en": "Matcha Siu Mai is a matcha-themed open-topped steamed dumpling with pork, shrimp, and a green wrapper.",
+        "yue": "抹茶燒賣係抹茶主題開口蒸餃，有豬肉、蝦同綠色外皮。"
+      },
+      "ingredients": [
+        "pork",
+        "shrimp",
+        "wheat flour",
+        "matcha powder"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "shellfish",
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3032-matcha-siu-mai.png",
+        "alt": {
+          "en": "Matcha Siu Mai steamed dumpling",
+          "yue": "抹茶燒賣蒸點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Siu Mai dim sum, natural Hong Kong tea-house food photography, open-topped steamed dumpling with a subtle green wrapper, bamboo basket, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3033",
+      "slug": "matcha-char-siu-bao",
+      "name": {
+        "en": "Matcha Char Siu Bao",
+        "zhHant": "抹茶叉燒包"
+      },
+      "jyutping": "mut3 caa4 caa1 siu1 baau1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-steamed-dim-sum",
+      "description": {
+        "en": "Matcha Char Siu Bao is a fluffy steamed bun with roast pork filling and a gentle matcha dough.",
+        "yue": "抹茶叉燒包係鬆軟蒸包，入面有叉燒餡，包皮帶淡淡抹茶香。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "roast pork",
+        "matcha powder",
+        "sugar"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "wheat",
+        "soy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3033-matcha-char-siu-bao.png",
+        "alt": {
+          "en": "Matcha Char Siu Bao steamed bun",
+          "yue": "抹茶叉燒包蒸包"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Char Siu Bao dim sum, natural Hong Kong tea-house food photography, fluffy green steamed bun with visible roast pork filling, bamboo basket, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3034",
+      "slug": "matcha-custard-bun",
+      "name": {
+        "en": "Matcha Custard Bun",
+        "zhHant": "抹茶奶皇包"
+      },
+      "jyutping": "mut3 caa4 naai5 wong4 baau1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-steamed-dim-sum",
+      "description": {
+        "en": "Matcha Custard Bun is a soft steamed bun filled with creamy matcha custard.",
+        "yue": "抹茶奶皇包係鬆軟蒸包，入面係香滑抹茶奶皇餡。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "egg",
+        "milk",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "dairy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3034-matcha-custard-bun.png",
+        "alt": {
+          "en": "Matcha Custard Bun steamed bun",
+          "yue": "抹茶奶皇包蒸包"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Custard Bun dim sum, natural Hong Kong tea-house food photography, soft green steamed bun with creamy custard shown in a small cut section, bamboo basket, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3035",
+      "slug": "matcha-lotus-paste-bun",
+      "name": {
+        "en": "Matcha Lotus Paste Bun",
+        "zhHant": "抹茶蓮蓉包"
+      },
+      "jyutping": "mut3 caa4 lin4 jung4 baau1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-steamed-dim-sum",
+      "description": {
+        "en": "Matcha Lotus Paste Bun is a steamed bun with smooth lotus seed paste and matcha dough.",
+        "yue": "抹茶蓮蓉包係蒸包，包住幼滑蓮蓉餡同抹茶包皮。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "lotus seeds",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3035-matcha-lotus-paste-bun.png",
+        "alt": {
+          "en": "Matcha Lotus Paste Bun steamed bun",
+          "yue": "抹茶蓮蓉包蒸包"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Lotus Paste Bun dim sum, natural Hong Kong tea-house food photography, smooth green steamed bun with pale lotus paste filling visible in a small cut section, bamboo basket, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3036",
+      "slug": "matcha-rice-noodle-roll",
+      "name": {
+        "en": "Matcha Rice Noodle Roll",
+        "zhHant": "抹茶腸粉"
+      },
+      "jyutping": "mut3 caa4 coeng4 fan2",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-rice-dim-sum",
+      "description": {
+        "en": "Matcha Rice Noodle Roll is a tender rolled rice sheet with a light matcha tint and savoury filling.",
+        "yue": "抹茶腸粉係滑身米皮捲，帶淡淡抹茶色，配鹹香餡料。"
+      },
+      "ingredients": [
+        "rice flour",
+        "shrimp",
+        "matcha powder",
+        "soy sauce"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "shellfish",
+        "soy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3036-matcha-rice-noodle-roll.png",
+        "alt": {
+          "en": "Matcha Rice Noodle Roll dim sum",
+          "yue": "抹茶腸粉點心"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Rice Noodle Roll dim sum, natural Hong Kong tea-house food photography, neatly rolled tender green-tinted rice sheet with shrimp filling and sauce, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3037",
+      "slug": "matcha-turnip-cake",
+      "name": {
+        "en": "Matcha Turnip Cake",
+        "zhHant": "抹茶蘿蔔糕"
+      },
+      "jyutping": "mut3 caa4 lo4 baak6 gou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-pan-fried-dim-sum",
+      "description": {
+        "en": "Matcha Turnip Cake is a pan-fried savoury cake with grated radish and a restrained matcha note.",
+        "yue": "抹茶蘿蔔糕係香煎鹹點，有蘿蔔絲同收斂嘅抹茶香。"
+      },
+      "ingredients": [
+        "daikon",
+        "rice flour",
+        "Chinese sausage",
+        "matcha powder"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "soy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3037-matcha-turnip-cake.png",
+        "alt": {
+          "en": "Matcha Turnip Cake pan-fried dim sum",
+          "yue": "抹茶蘿蔔糕香煎點心"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Turnip Cake dim sum, natural Hong Kong tea-house food photography, two golden pan-fried green-flecked radish cake pieces on a ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3038",
+      "slug": "matcha-taro-cake",
+      "name": {
+        "en": "Matcha Taro Cake",
+        "zhHant": "抹茶芋頭糕"
+      },
+      "jyutping": "mut3 caa4 wu6 tau4 gou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-pan-fried-dim-sum",
+      "description": {
+        "en": "Matcha Taro Cake is a savoury steamed and pan-fried cake with taro and matcha.",
+        "yue": "抹茶芋頭糕係先蒸後煎嘅鹹點，有芋頭粒同抹茶。"
+      },
+      "ingredients": [
+        "taro",
+        "rice flour",
+        "dried shrimp",
+        "matcha powder"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "shellfish"
+      ],
+      "image": {
+        "path": "images/hk-dish-3038-matcha-taro-cake.png",
+        "alt": {
+          "en": "Matcha Taro Cake dim sum",
+          "yue": "抹茶芋頭糕點心"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Taro Cake dim sum, natural Hong Kong tea-house food photography, neat pan-fried square with visible taro pieces and subtle green matcha crumb, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3039",
+      "slug": "matcha-beef-meatball",
+      "name": {
+        "en": "Matcha Beef Meatball",
+        "zhHant": "抹茶牛肉球"
+      },
+      "jyutping": "mut3 caa4 ngau4 juk6 kau4",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-steamed-dim-sum",
+      "description": {
+        "en": "Matcha Beef Meatball is a springy steamed beef ball with a small amount of matcha powder.",
+        "yue": "抹茶牛肉球係彈牙蒸牛肉球，加少量抹茶粉帶出茶香。"
+      },
+      "ingredients": [
+        "beef",
+        "water chestnut",
+        "matcha powder",
+        "sesame oil"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "sesame"
+      ],
+      "image": {
+        "path": "images/hk-dish-3039-matcha-beef-meatball.png",
+        "alt": {
+          "en": "Matcha Beef Meatball steamed dim sum",
+          "yue": "抹茶牛肉球蒸點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Beef Meatball dim sum, natural Hong Kong tea-house food photography, springy steamed beef meatball with subtle green matcha flecks in a bamboo basket, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3040",
+      "slug": "matcha-chicken-feet",
+      "name": {
+        "en": "Matcha Chicken Feet",
+        "zhHant": "抹茶鳳爪"
+      },
+      "jyutping": "mut3 caa4 fung6 zaau2",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-steamed-dim-sum",
+      "description": {
+        "en": "Matcha Chicken Feet is a savoury steamed dim sum braised with fermented black bean and matcha.",
+        "yue": "抹茶鳳爪係豉汁蒸鹹點，用豆豉同抹茶帶出茶香。"
+      },
+      "ingredients": [
+        "chicken feet",
+        "fermented black beans",
+        "matcha powder",
+        "soy sauce"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "soy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3040-matcha-chicken-feet.png",
+        "alt": {
+          "en": "Matcha Chicken Feet steamed dim sum",
+          "yue": "抹茶鳳爪蒸點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Chicken Feet dim sum, natural Hong Kong tea-house food photography, braised chicken feet in a small ceramic dish with restrained green matcha garnish, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3041",
+      "slug": "matcha-prawn-toast",
+      "name": {
+        "en": "Matcha Prawn Toast",
+        "zhHant": "抹茶蝦多士"
+      },
+      "jyutping": "mut3 caa4 haa1 do1 si6",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-fried-dim-sum",
+      "description": {
+        "en": "Matcha Prawn Toast is crisp fried bread topped with seasoned shrimp and matcha.",
+        "yue": "抹茶蝦多士係香脆炸麵包，上面鋪蝦膠同抹茶。"
+      },
+      "ingredients": [
+        "bread",
+        "shrimp",
+        "sesame",
+        "matcha powder"
+      ],
+      "dietaryTags": [],
+      "allergens": [
+        "shellfish",
+        "wheat",
+        "sesame"
+      ],
+      "image": {
+        "path": "images/hk-dish-3041-matcha-prawn-toast.png",
+        "alt": {
+          "en": "Matcha Prawn Toast fried dim sum",
+          "yue": "抹茶蝦多士炸點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Prawn Toast dim sum, natural Hong Kong tea-house food photography, crisp golden toast topped with shrimp and subtle matcha sesame, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3042",
+      "slug": "matcha-spring-roll",
+      "name": {
+        "en": "Matcha Spring Roll",
+        "zhHant": "抹茶春卷"
+      },
+      "jyutping": "mut3 caa4 ceon1 gyun2",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-fried-dim-sum",
+      "description": {
+        "en": "Matcha Spring Roll is a crisp fried wrapper filled with vegetables and matcha seasoning.",
+        "yue": "抹茶春卷係香脆炸皮，入面有蔬菜同抹茶調味。"
+      },
+      "ingredients": [
+        "wheat wrapper",
+        "cabbage",
+        "carrot",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3042-matcha-spring-roll.png",
+        "alt": {
+          "en": "Matcha Spring Roll fried dim sum",
+          "yue": "抹茶春卷炸點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Spring Roll dim sum, natural Hong Kong tea-house food photography, crisp golden roll with green matcha wrapper detail and vegetable filling, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3043",
+      "slug": "matcha-sesame-ball",
+      "name": {
+        "en": "Matcha Sesame Ball",
+        "zhHant": "抹茶芝麻球"
+      },
+      "jyutping": "mut3 caa4 zi1 maa4 kau4",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-fried-dim-sum",
+      "description": {
+        "en": "Matcha Sesame Ball is a chewy glutinous rice pastry filled with sweet black sesame paste.",
+        "yue": "抹茶芝麻球係煙韌糯米炸點，入面有香甜黑芝麻餡。"
+      },
+      "ingredients": [
+        "glutinous rice flour",
+        "black sesame paste",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "image": {
+        "path": "images/hk-dish-3043-matcha-sesame-ball.png",
+        "alt": {
+          "en": "Matcha Sesame Ball fried dim sum",
+          "yue": "抹茶芝麻球炸點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Sesame Ball dim sum, natural Hong Kong tea-house food photography, round crisp sesame-coated pastry with green matcha dough and black sesame centre, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3044",
+      "slug": "matcha-coconut-tart",
+      "name": {
+        "en": "Matcha Coconut Tart",
+        "zhHant": "抹茶椰撻"
+      },
+      "jyutping": "mut3 caa4 je4 taat1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-baked-dim-sum",
+      "description": {
+        "en": "Matcha Coconut Tart is a small baked pastry with coconut custard and matcha.",
+        "yue": "抹茶椰撻係細份焗酥皮點心，入面有椰香奶黃同抹茶。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "coconut milk",
+        "egg",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat",
+        "egg"
+      ],
+      "image": {
+        "path": "images/hk-dish-3044-matcha-coconut-tart.png",
+        "alt": {
+          "en": "Matcha Coconut Tart baked dim sum",
+          "yue": "抹茶椰撻焗點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Coconut Tart dim sum, natural Hong Kong tea-house food photography, small flaky tart with green matcha coconut custard, ceramic saucer, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3045",
+      "slug": "matcha-egg-tart",
+      "name": {
+        "en": "Matcha Egg Tart",
+        "zhHant": "抹茶蛋撻"
+      },
+      "jyutping": "mut3 caa4 daan6 taat1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-baked-dim-sum",
+      "description": {
+        "en": "Matcha Egg Tart is a flaky Hong Kong pastry filled with smooth matcha egg custard.",
+        "yue": "抹茶蛋撻係酥皮港式撻，入面係幼滑抹茶蛋奶餡。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "egg",
+        "milk",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "dairy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3045-matcha-egg-tart.png",
+        "alt": {
+          "en": "Matcha Egg Tart baked dim sum",
+          "yue": "抹茶蛋撻焗點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Egg Tart dim sum, natural Hong Kong tea-house food photography, flaky pastry with smooth green matcha custard, ceramic saucer, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3046",
+      "slug": "matcha-wife-cake",
+      "name": {
+        "en": "Matcha Wife Cake",
+        "zhHant": "抹茶老婆餅"
+      },
+      "jyutping": "mut3 caa4 lou5 po4 beng2",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-baked-dim-sum",
+      "description": {
+        "en": "Matcha Wife Cake is a layered flaky pastry with winter melon and matcha filling.",
+        "yue": "抹茶老婆餅係層層酥皮點心，入面有冬瓜蓉同抹茶餡。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "winter melon",
+        "sesame",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "wheat",
+        "sesame"
+      ],
+      "image": {
+        "path": "images/hk-dish-3046-matcha-wife-cake.png",
+        "alt": {
+          "en": "Matcha Wife Cake baked dim sum",
+          "yue": "抹茶老婆餅焗點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Wife Cake dim sum, natural Hong Kong tea-house food photography, layered flaky round pastry with a subtle green filling, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3047",
+      "slug": "matcha-sesame-cake",
+      "name": {
+        "en": "Matcha Sesame Cake",
+        "zhHant": "抹茶芝麻糕"
+      },
+      "jyutping": "mut3 caa4 zi1 maa4 gou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Sesame Cake is a soft layered rice cake with toasted sesame and matcha.",
+        "yue": "抹茶芝麻糕係鬆軟層次米糕，有香烤芝麻同抹茶。"
+      },
+      "ingredients": [
+        "rice flour",
+        "sesame",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "image": {
+        "path": "images/hk-dish-3047-matcha-sesame-cake.png",
+        "alt": {
+          "en": "Matcha Sesame Cake sweet dim sum",
+          "yue": "抹茶芝麻糕甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Sesame Cake dim sum, natural Hong Kong tea-house food photography, neat soft green rice cake layers with toasted sesame, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3048",
+      "slug": "matcha-red-bean-pudding",
+      "name": {
+        "en": "Matcha Red Bean Pudding",
+        "zhHant": "抹茶紅豆糕"
+      },
+      "jyutping": "mut3 caa4 hung4 dau6 gou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Red Bean Pudding is a chilled layered pudding with sweet red beans and matcha.",
+        "yue": "抹茶紅豆糕係凍食層次糕點，有甜紅豆同抹茶。"
+      },
+      "ingredients": [
+        "red beans",
+        "rice flour",
+        "coconut milk",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [],
+      "image": {
+        "path": "images/hk-dish-3048-matcha-red-bean-pudding.png",
+        "alt": {
+          "en": "Matcha Red Bean Pudding sweet dim sum",
+          "yue": "抹茶紅豆糕甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Red Bean Pudding dim sum, natural Hong Kong tea-house food photography, chilled green pudding with visible red bean layer, small ceramic dish, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3049",
+      "slug": "matcha-mango-pudding",
+      "name": {
+        "en": "Matcha Mango Pudding",
+        "zhHant": "抹茶芒果布甸"
+      },
+      "jyutping": "mut3 caa4 mong1 gwo2 bou3 din6",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Mango Pudding is a chilled tea-house pudding pairing ripe mango with matcha.",
+        "yue": "抹茶芒果布甸係茶樓凍甜品，用熟芒果配抹茶。"
+      },
+      "ingredients": [
+        "mango",
+        "gelatin",
+        "coconut milk",
+        "matcha powder"
+      ],
+      "dietaryTags": [],
+      "allergens": [],
+      "image": {
+        "path": "images/hk-dish-3049-matcha-mango-pudding.png",
+        "alt": {
+          "en": "Matcha Mango Pudding sweet dim sum",
+          "yue": "抹茶芒果布甸甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Mango Pudding dim sum, natural Hong Kong tea-house food photography, smooth green pudding with mango cubes in a ceramic cup, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3050",
+      "slug": "matcha-sago-cream",
+      "name": {
+        "en": "Matcha Sago Cream",
+        "zhHant": "抹茶西米露"
+      },
+      "jyutping": "mut3 caa4 sai1 mai5 lou6",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Sago Cream is a chilled coconut dessert with translucent sago and matcha.",
+        "yue": "抹茶西米露係凍食椰香甜品，有晶瑩西米同抹茶。"
+      },
+      "ingredients": [
+        "tapioca pearls",
+        "coconut milk",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [],
+      "image": {
+        "path": "images/hk-dish-3050-matcha-sago-cream.png",
+        "alt": {
+          "en": "Matcha Sago Cream sweet dim sum",
+          "yue": "抹茶西米露甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Sago Cream dim sum, natural Hong Kong tea-house food photography, pale green coconut sago dessert in a glass bowl, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3051",
+      "slug": "matcha-tang-yuan",
+      "name": {
+        "en": "Matcha Tang Yuan",
+        "zhHant": "抹茶湯圓"
+      },
+      "jyutping": "mut3 caa4 tong1 jyun4",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Tang Yuan is a glutinous rice dumpling with sweet sesame filling and matcha dough.",
+        "yue": "抹茶湯圓係糯米甜點，入面有芝麻餡，外皮帶抹茶香。"
+      },
+      "ingredients": [
+        "glutinous rice flour",
+        "black sesame paste",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "image": {
+        "path": "images/hk-dish-3051-matcha-tang-yuan.png",
+        "alt": {
+          "en": "Matcha Tang Yuan sweet dim sum",
+          "yue": "抹茶湯圓甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Tang Yuan dim sum, natural Hong Kong tea-house food photography, round green glutinous rice dumpling with black sesame filling shown in one cut piece, ceramic bowl, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3052",
+      "slug": "matcha-mochi-roll",
+      "name": {
+        "en": "Matcha Mochi Roll",
+        "zhHant": "抹茶麻糬卷"
+      },
+      "jyutping": "mut3 caa4 maa4 ci4 gyun2",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Mochi Roll is a chewy rice pastry rolled around sweetened cream and matcha.",
+        "yue": "抹茶麻糬卷係煙韌米點，捲住甜忌廉同抹茶香。"
+      },
+      "ingredients": [
+        "glutinous rice flour",
+        "cream",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3052-matcha-mochi-roll.png",
+        "alt": {
+          "en": "Matcha Mochi Roll sweet dim sum",
+          "yue": "抹茶麻糬卷甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Mochi Roll dim sum, natural Hong Kong tea-house food photography, neat green chewy rice roll with cream centre, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3053",
+      "slug": "matcha-coconut-jelly",
+      "name": {
+        "en": "Matcha Coconut Jelly",
+        "zhHant": "抹茶椰汁糕"
+      },
+      "jyutping": "mut3 caa4 je4 zap1 gou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Coconut Jelly is a cool translucent layered jelly with coconut milk and matcha.",
+        "yue": "抹茶椰汁糕係清涼晶瑩層次糕點，有椰汁同抹茶。"
+      },
+      "ingredients": [
+        "coconut milk",
+        "agar",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [],
+      "image": {
+        "path": "images/hk-dish-3053-matcha-coconut-jelly.png",
+        "alt": {
+          "en": "Matcha Coconut Jelly sweet dim sum",
+          "yue": "抹茶椰汁糕甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Coconut Jelly dim sum, natural Hong Kong tea-house food photography, translucent green and white layered jelly cubes on a ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3054",
+      "slug": "matcha-black-sesame-puff",
+      "name": {
+        "en": "Matcha Black Sesame Puff",
+        "zhHant": "抹茶黑芝麻酥"
+      },
+      "jyutping": "mut3 caa4 hak1 zi1 maa4 sou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-baked-dim-sum",
+      "description": {
+        "en": "Matcha Black Sesame Puff is a flaky baked pastry with black sesame and matcha filling.",
+        "yue": "抹茶黑芝麻酥係鬆化焗酥皮，入面有黑芝麻同抹茶餡。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "black sesame",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "wheat",
+        "sesame"
+      ],
+      "image": {
+        "path": "images/hk-dish-3054-matcha-black-sesame-puff.png",
+        "alt": {
+          "en": "Matcha Black Sesame Puff baked dim sum",
+          "yue": "抹茶黑芝麻酥焗點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Black Sesame Puff dim sum, natural Hong Kong tea-house food photography, flaky layered pastry with dark sesame and green matcha filling, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3055",
+      "slug": "matcha-pineapple-bun",
+      "name": {
+        "en": "Matcha Pineapple Bun",
+        "zhHant": "抹茶菠蘿包"
+      },
+      "jyutping": "mut3 caa4 bo1 lo4 baau1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-baked-dim-sum",
+      "description": {
+        "en": "Matcha Pineapple Bun is a Hong Kong-style bun with a crisp crackled matcha topping.",
+        "yue": "抹茶菠蘿包係港式麵包，面層有香脆裂紋抹茶酥皮。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "butter",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat",
+        "dairy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3055-matcha-pineapple-bun.png",
+        "alt": {
+          "en": "Matcha Pineapple Bun baked dim sum",
+          "yue": "抹茶菠蘿包焗點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Pineapple Bun dim sum, natural Hong Kong tea-house food photography, round golden bun with crisp crackled green matcha topping, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3056",
+      "slug": "matcha-custard-tart",
+      "name": {
+        "en": "Matcha Custard Tart",
+        "zhHant": "抹茶奶皇撻"
+      },
+      "jyutping": "mut3 caa4 naai5 wong4 taat1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-baked-dim-sum",
+      "description": {
+        "en": "Matcha Custard Tart is a small flaky tart with smooth matcha custard.",
+        "yue": "抹茶奶皇撻係細份酥皮撻，入面有幼滑抹茶奶皇。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "egg",
+        "milk",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "dairy"
+      ],
+      "image": {
+        "path": "images/hk-dish-3056-matcha-custard-tart.png",
+        "alt": {
+          "en": "Matcha Custard Tart baked dim sum",
+          "yue": "抹茶奶皇撻焗點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Custard Tart dim sum, natural Hong Kong tea-house food photography, small flaky tart with glossy green custard, ceramic saucer, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3057",
+      "slug": "matcha-mung-bean-cake",
+      "name": {
+        "en": "Matcha Mung Bean Cake",
+        "zhHant": "抹茶綠豆糕"
+      },
+      "jyutping": "mut3 caa4 luk6 dau6 gou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Mung Bean Cake is a delicate pressed cake with fine mung bean paste and matcha.",
+        "yue": "抹茶綠豆糕係細緻壓模糕點，用幼滑綠豆蓉配抹茶。"
+      },
+      "ingredients": [
+        "mung beans",
+        "sugar",
+        "coconut oil",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [],
+      "image": {
+        "path": "images/hk-dish-3057-matcha-mung-bean-cake.png",
+        "alt": {
+          "en": "Matcha Mung Bean Cake sweet dim sum",
+          "yue": "抹茶綠豆糕甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Mung Bean Cake dim sum, natural Hong Kong tea-house food photography, delicate pressed pale green cake with traditional pattern, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3058",
+      "slug": "matcha-peanut-brittle-roll",
+      "name": {
+        "en": "Matcha Peanut Brittle Roll",
+        "zhHant": "抹茶花生酥卷"
+      },
+      "jyutping": "mut3 caa4 faa1 sang1 sou1 gyun2",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Peanut Brittle Roll is a crisp rolled sweet with roasted peanuts and matcha.",
+        "yue": "抹茶花生酥卷係香脆卷狀甜點，有烘香花生同抹茶。"
+      },
+      "ingredients": [
+        "peanuts",
+        "wheat flour",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "peanut",
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3058-matcha-peanut-brittle-roll.png",
+        "alt": {
+          "en": "Matcha Peanut Brittle Roll sweet dim sum",
+          "yue": "抹茶花生酥卷甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Peanut Brittle Roll dim sum, natural Hong Kong tea-house food photography, crisp rolled pastry with visible roasted peanuts and green matcha crumb, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3059",
+      "slug": "matcha-sweet-potato-puff",
+      "name": {
+        "en": "Matcha Sweet Potato Puff",
+        "zhHant": "抹茶番薯酥"
+      },
+      "jyutping": "mut3 caa4 faan1 syu4 sou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-baked-dim-sum",
+      "description": {
+        "en": "Matcha Sweet Potato Puff is a layered pastry filled with sweet potato and matcha.",
+        "yue": "抹茶番薯酥係層次酥皮點心，入面有番薯蓉同抹茶。"
+      },
+      "ingredients": [
+        "wheat flour",
+        "sweet potato",
+        "sugar",
+        "matcha powder"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3059-matcha-sweet-potato-puff.png",
+        "alt": {
+          "en": "Matcha Sweet Potato Puff baked dim sum",
+          "yue": "抹茶番薯酥焗點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Sweet Potato Puff dim sum, natural Hong Kong tea-house food photography, layered flaky pastry with orange sweet potato and green matcha filling, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3060",
+      "slug": "matcha-yam-cake",
+      "name": {
+        "en": "Matcha Yam Cake",
+        "zhHant": "抹茶山藥糕"
+      },
+      "jyutping": "mut3 caa4 saan1 joek6 gou1",
+      "category": "hong-kong-dim-sum",
+      "subcategory": "matcha-sweet-dim-sum",
+      "description": {
+        "en": "Matcha Yam Cake is a soft steamed sweet cake made with yam, chocolate, and matcha.",
+        "yue": "抹茶山藥糕係鬆軟蒸甜糕，用山藥、朱古力同抹茶整成。"
+      },
+      "ingredients": [
+        "yam",
+        "rice flour",
+        "sugar",
+        "matcha powder",
+        "chocolate"
+      ],
+      "dietaryTags": [
+        "vegan"
+      ],
+      "allergens": [],
+      "image": {
+        "path": "images/hk-dish-3060-matcha-yam-cake.png",
+        "alt": {
+          "en": "Matcha Yam Cake sweet dim sum",
+          "yue": "抹茶山藥糕甜點"
+        }
+      },
+      "imagePrompt": "A native square offline catalog image of one authentic matcha Yam Cake dim sum, natural Hong Kong tea-house food photography, soft pale green steamed cake with yam, chocolate, and matcha texture and a traditional slice, ceramic plate, soft window light, no people, text, logos, watermark, or unrelated dishes.",
+      "chocolateFilled": true
+    },
+    {
+      "id": "hk-dish-3061",
+      "slug": "hong-kong-matcha-saffron-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha Saffron Steamed Bun",
+        "zhHant": "香港抹茶藏紅花蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha Saffron Steamed Bun is a Hong Kong tea-house sweet bun with matcha custard, saffron, rice flour and wheat flour.",
+        "yue": "香港抹茶藏紅花蒸包係茶樓甜包，用抹茶卡士達、藏紅花、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "saffron",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3061-hong-kong-matcha-saffron-steamed-bun.png",
+        "alt": {
+          "en": "Hong Kong Matcha Saffron Steamed Bun, one serving on a small Hong Kong tea-house plate.",
+          "yue": "香港抹茶藏紅花蒸包，一客放喺細茶樓碟上。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha Saffron Steamed Bun. Show a soft green steamed bun with saffron-matcha filling, natural Hong Kong tea-house tableware, warm window light, one serving, full vessel visible, no people, no text, no logos, no watermark, no packaging, and no unrelated dishes."
+    }
+  ]
+}

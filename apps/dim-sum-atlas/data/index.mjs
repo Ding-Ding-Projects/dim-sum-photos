@@ -97,13 +97,13 @@ export function prepareCatalog(catalog) {
 
 export async function loadPreparedCatalog(catalogPath = CATALOG_PATH) {
   const catalog = JSON.parse(await fs.readFile(catalogPath, 'utf8'));
-  const additionsPath = path.resolve(path.dirname(catalogPath), 'additions-3009-3030.json');
-  try {
-    const additions = JSON.parse(await fs.readFile(additionsPath, 'utf8'));
-    const ids = new Set(catalog.dishes.map((dish) => dish.id));
-    catalog.dishes.push(...additions.dishes.filter((dish) => !ids.has(dish.id)));
-  } catch (error) {
-    if (error.code !== 'ENOENT') throw error;
+  const additionsFiles = (await fs.readdir(path.dirname(catalogPath))).filter((file) => /^additions-.*\.json$/i.test(file)).sort();
+  const ids = new Set(catalog.dishes.map((dish) => dish.id));
+  for (const file of additionsFiles) {
+    const additions = JSON.parse(await fs.readFile(path.resolve(path.dirname(catalogPath), file), 'utf8'));
+    for (const dish of additions.dishes || []) {
+      if (!ids.has(dish.id)) { catalog.dishes.push(dish); ids.add(dish.id); }
+    }
   }
   return prepareCatalog(catalog);
 }

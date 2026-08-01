@@ -28,9 +28,10 @@ jobs:
         run: |
           Copy-Item '../../catalog/index.json' 'catalog.json' -Force
           $catalog = Get-Content 'catalog.json' -Raw | ConvertFrom-Json
-          if (Test-Path '../../catalog/additions-3009-3030.json') {
-            $additions = Get-Content '../../catalog/additions-3009-3030.json' -Raw | ConvertFrom-Json
-            $catalog.dishes = @($catalog.dishes) + @($additions.dishes)
+          $seen = [System.Collections.Generic.HashSet[string]]::new([string[]]$catalog.dishes.id)
+          Get-ChildItem '../../catalog/additions-*.json' | Sort-Object Name | ForEach-Object {
+            $additions = Get-Content $_.FullName -Raw | ConvertFrom-Json
+            foreach ($dish in @($additions.dishes)) { if ($seen.Add($dish.id)) { $catalog.dishes += $dish } }
           }
           $catalog | ConvertTo-Json -Depth 20 | Set-Content 'catalog.json' -Encoding utf8
       - name: Bundle portable 7-Zip
