@@ -24,7 +24,10 @@ function createWindow() {
 }
 
 ipcMain.handle('catalog:read', () => {
-  const catalogPath = path.resolve(__dirname, '..', '..', '..', 'dim-sum', 'index.json');
+  const bundledCatalog = path.resolve(__dirname, '..', 'catalog.json');
+  const canonicalCatalog = path.resolve(__dirname, '..', '..', '..', 'dim-sum', 'index.json');
+  const publicCatalog = path.resolve(__dirname, '..', '..', '..', 'catalog', 'index.json');
+  const catalogPath = fs.existsSync(bundledCatalog) ? bundledCatalog : fs.existsSync(publicCatalog) ? publicCatalog : canonicalCatalog;
   const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
   catalog.dishes = catalog.dishes.map((dish) => ({
     ...dish,

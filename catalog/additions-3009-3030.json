@@ -1,0 +1,775 @@
+{
+  "dishes": [
+    {
+      "id": "hk-dish-3009",
+      "slug": "hong-kong-matcha-peanut-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha peanut Steamed Bun",
+        "zhHant": "香港抹茶花生蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha peanut Steamed Bun is a soft tea-house sweet bun with matcha custard, peanut, rice flour and wheat flour.",
+        "yue": "香港抹茶花生蒸包係茶樓甜包，用抹茶卡士達、花生、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "peanut",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3009-hong-kong-matcha-peanut-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha peanut Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶花生蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha peanut Steamed Bun. Show a soft green bun with peanut filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3010",
+      "slug": "hong-kong-matcha-almond-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha almond Steamed Bun",
+        "zhHant": "香港抹茶杏仁蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha almond Steamed Bun is a soft tea-house sweet bun with matcha custard, almond, rice flour and wheat flour.",
+        "yue": "香港抹茶杏仁蒸包係茶樓甜包，用抹茶卡士達、杏仁、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "almond",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3010-hong-kong-matcha-almond-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha almond Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶杏仁蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha almond Steamed Bun. Show a soft green bun with almond filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3011",
+      "slug": "hong-kong-matcha-chestnut-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha chestnut Steamed Bun",
+        "zhHant": "香港抹茶栗子蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha chestnut Steamed Bun is a soft tea-house sweet bun with matcha custard, chestnut, rice flour and wheat flour.",
+        "yue": "香港抹茶栗子蒸包係茶樓甜包，用抹茶卡士達、栗子、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "chestnut",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3011-hong-kong-matcha-chestnut-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha chestnut Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶栗子蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha chestnut Steamed Bun. Show a soft green bun with chestnut filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3012",
+      "slug": "hong-kong-matcha-pumpkin-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha pumpkin Steamed Bun",
+        "zhHant": "香港抹茶南瓜蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha pumpkin Steamed Bun is a soft tea-house sweet bun with matcha custard, pumpkin, rice flour and wheat flour.",
+        "yue": "香港抹茶南瓜蒸包係茶樓甜包，用抹茶卡士達、南瓜、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "pumpkin",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3012-hong-kong-matcha-pumpkin-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha pumpkin Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶南瓜蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha pumpkin Steamed Bun. Show a soft green bun with pumpkin filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3013",
+      "slug": "hong-kong-matcha-sweet-potato-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha sweet potato Steamed Bun",
+        "zhHant": "香港抹茶番薯蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha sweet potato Steamed Bun is a soft tea-house sweet bun with matcha custard, sweet potato, rice flour and wheat flour.",
+        "yue": "香港抹茶番薯蒸包係茶樓甜包，用抹茶卡士達、番薯、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "sweet potato",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3013-hong-kong-matcha-sweet-potato-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha sweet potato Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶番薯蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha sweet potato Steamed Bun. Show a soft green bun with sweet potato filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3014",
+      "slug": "hong-kong-matcha-lotus-seed-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha lotus seed Steamed Bun",
+        "zhHant": "香港抹茶蓮蓉蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha lotus seed Steamed Bun is a soft tea-house sweet bun with matcha custard, lotus seed, rice flour and wheat flour.",
+        "yue": "香港抹茶蓮蓉蒸包係茶樓甜包，用抹茶卡士達、蓮蓉、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "lotus seed",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3014-hong-kong-matcha-lotus-seed-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha lotus seed Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶蓮蓉蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha lotus seed Steamed Bun. Show a soft green bun with lotus seed filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3015",
+      "slug": "hong-kong-matcha-custard-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha custard Steamed Bun",
+        "zhHant": "香港抹茶奶黃蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha custard Steamed Bun is a soft tea-house sweet bun with matcha custard, custard, rice flour and wheat flour.",
+        "yue": "香港抹茶奶黃蒸包係茶樓甜包，用抹茶卡士達、奶黃、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "custard",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3015-hong-kong-matcha-custard-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha custard Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶奶黃蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha custard Steamed Bun. Show a soft green bun with custard filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3016",
+      "slug": "hong-kong-matcha-salted-egg-yolk-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha salted egg yolk Steamed Bun",
+        "zhHant": "香港抹茶鹹蛋黃蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha salted egg yolk Steamed Bun is a soft tea-house sweet bun with matcha custard, salted egg yolk, rice flour and wheat flour.",
+        "yue": "香港抹茶鹹蛋黃蒸包係茶樓甜包，用抹茶卡士達、鹹蛋黃、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "salted egg yolk",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3016-hong-kong-matcha-salted-egg-yolk-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha salted egg yolk Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶鹹蛋黃蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha salted egg yolk Steamed Bun. Show a soft green bun with salted egg yolk filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3017",
+      "slug": "hong-kong-matcha-black-sugar-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha black sugar Steamed Bun",
+        "zhHant": "香港抹茶黑糖蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha black sugar Steamed Bun is a soft tea-house sweet bun with matcha custard, black sugar, rice flour and wheat flour.",
+        "yue": "香港抹茶黑糖蒸包係茶樓甜包，用抹茶卡士達、黑糖、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "black sugar",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3017-hong-kong-matcha-black-sugar-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha black sugar Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶黑糖蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha black sugar Steamed Bun. Show a soft green bun with black sugar filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3018",
+      "slug": "hong-kong-matcha-osmanthus-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha osmanthus Steamed Bun",
+        "zhHant": "香港抹茶桂花蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha osmanthus Steamed Bun is a soft tea-house sweet bun with matcha custard, osmanthus, rice flour and wheat flour.",
+        "yue": "香港抹茶桂花蒸包係茶樓甜包，用抹茶卡士達、桂花、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "osmanthus",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3018-hong-kong-matcha-osmanthus-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha osmanthus Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶桂花蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha osmanthus Steamed Bun. Show a soft green bun with osmanthus filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3019",
+      "slug": "hong-kong-matcha-ginger-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha ginger Steamed Bun",
+        "zhHant": "香港抹茶薑蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha ginger Steamed Bun is a soft tea-house sweet bun with matcha custard, ginger, rice flour and wheat flour.",
+        "yue": "香港抹茶薑蒸包係茶樓甜包，用抹茶卡士達、薑、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "ginger",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3019-hong-kong-matcha-ginger-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha ginger Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶薑蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha ginger Steamed Bun. Show a soft green bun with ginger filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3020",
+      "slug": "hong-kong-matcha-red-date-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha red date Steamed Bun",
+        "zhHant": "香港抹茶紅棗蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha red date Steamed Bun is a soft tea-house sweet bun with matcha custard, red date, rice flour and wheat flour.",
+        "yue": "香港抹茶紅棗蒸包係茶樓甜包，用抹茶卡士達、紅棗、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "red date",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3020-hong-kong-matcha-red-date-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha red date Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶紅棗蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha red date Steamed Bun. Show a soft green bun with red date filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3021",
+      "slug": "hong-kong-matcha-yuzu-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha yuzu Steamed Bun",
+        "zhHant": "香港抹茶柚子蜜蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha yuzu Steamed Bun is a soft tea-house sweet bun with matcha custard, yuzu, rice flour and wheat flour.",
+        "yue": "香港抹茶柚子蜜蒸包係茶樓甜包，用抹茶卡士達、柚子、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "yuzu",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3021-hong-kong-matcha-yuzu-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha yuzu Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶柚子蜜蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha yuzu Steamed Bun. Show a soft green bun with yuzu filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3022",
+      "slug": "hong-kong-matcha-strawberry-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha strawberry Steamed Bun",
+        "zhHant": "香港抹茶士多啤梨蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha strawberry Steamed Bun is a soft tea-house sweet bun with matcha custard, strawberry, rice flour and wheat flour.",
+        "yue": "香港抹茶士多啤梨蒸包係茶樓甜包，用抹茶卡士達、士多啤梨、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "strawberry",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3022-hong-kong-matcha-strawberry-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha strawberry Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶士多啤梨蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha strawberry Steamed Bun. Show a soft green bun with strawberry filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3023",
+      "slug": "hong-kong-matcha-lychee-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha lychee Steamed Bun",
+        "zhHant": "香港抹茶荔枝蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha lychee Steamed Bun is a soft tea-house sweet bun with matcha custard, lychee, rice flour and wheat flour.",
+        "yue": "香港抹茶荔枝蒸包係茶樓甜包，用抹茶卡士達、荔枝、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "lychee",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3023-hong-kong-matcha-lychee-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha lychee Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶荔枝蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha lychee Steamed Bun. Show a soft green bun with lychee filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3024",
+      "slug": "hong-kong-matcha-longan-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha longan Steamed Bun",
+        "zhHant": "香港抹茶龍眼蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha longan Steamed Bun is a soft tea-house sweet bun with matcha custard, longan, rice flour and wheat flour.",
+        "yue": "香港抹茶龍眼蒸包係茶樓甜包，用抹茶卡士達、龍眼、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "longan",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3024-hong-kong-matcha-longan-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha longan Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶龍眼蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha longan Steamed Bun. Show a soft green bun with longan filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3025",
+      "slug": "hong-kong-matcha-banana-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha banana Steamed Bun",
+        "zhHant": "香港抹茶香蕉蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha banana Steamed Bun is a soft tea-house sweet bun with matcha custard, banana, rice flour and wheat flour.",
+        "yue": "香港抹茶香蕉蒸包係茶樓甜包，用抹茶卡士達、香蕉、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "banana",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3025-hong-kong-matcha-banana-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha banana Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶香蕉蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha banana Steamed Bun. Show a soft green bun with banana filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3026",
+      "slug": "hong-kong-matcha-purple-sweet-potato-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha purple sweet potato Steamed Bun",
+        "zhHant": "香港抹茶紫薯蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha purple sweet potato Steamed Bun is a soft tea-house sweet bun with matcha custard, purple sweet potato, rice flour and wheat flour.",
+        "yue": "香港抹茶紫薯蒸包係茶樓甜包，用抹茶卡士達、紫薯、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "purple sweet potato",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3026-hong-kong-matcha-purple-sweet-potato-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha purple sweet potato Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶紫薯蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha purple sweet potato Steamed Bun. Show a soft green bun with purple sweet potato filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3027",
+      "slug": "hong-kong-matcha-corn-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha corn Steamed Bun",
+        "zhHant": "香港抹茶粟米蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha corn Steamed Bun is a soft tea-house sweet bun with matcha custard, corn, rice flour and wheat flour.",
+        "yue": "香港抹茶粟米蒸包係茶樓甜包，用抹茶卡士達、粟米、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "corn",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3027-hong-kong-matcha-corn-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha corn Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶粟米蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha corn Steamed Bun. Show a soft green bun with corn filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3028",
+      "slug": "hong-kong-matcha-sesame-coconut-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha sesame coconut Steamed Bun",
+        "zhHant": "香港抹茶芝麻椰香蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha sesame coconut Steamed Bun is a soft tea-house sweet bun with matcha custard, sesame coconut, rice flour and wheat flour.",
+        "yue": "香港抹茶芝麻椰香蒸包係茶樓甜包，用抹茶卡士達、芝麻椰香、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "sesame coconut",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3028-hong-kong-matcha-sesame-coconut-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha sesame coconut Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶芝麻椰香蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha sesame coconut Steamed Bun. Show a soft green bun with sesame coconut filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3029",
+      "slug": "hong-kong-matcha-red-bean-mochi-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha red bean mochi Steamed Bun",
+        "zhHant": "香港抹茶紅豆麻糬蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha red bean mochi Steamed Bun is a soft tea-house sweet bun with matcha custard, red bean mochi, rice flour and wheat flour.",
+        "yue": "香港抹茶紅豆麻糬蒸包係茶樓甜包，用抹茶卡士達、紅豆麻糬、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "red bean mochi",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3029-hong-kong-matcha-red-bean-mochi-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha red bean mochi Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶紅豆麻糬蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha red bean mochi Steamed Bun. Show a soft green bun with red bean mochi filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    },
+    {
+      "id": "hk-dish-3030",
+      "slug": "hong-kong-matcha-taro-mochi-steamed-bun",
+      "name": {
+        "en": "Hong Kong Matcha taro mochi Steamed Bun",
+        "zhHant": "香港抹茶芋泥麻糬蒸包"
+      },
+      "jyutping": "hoeng1 gong2 mut3 caa4 zing1 baau1",
+      "category": "hong-kong-desserts",
+      "subcategory": "matcha-steamed-desserts",
+      "description": {
+        "en": "Hong Kong Matcha taro mochi Steamed Bun is a soft tea-house sweet bun with matcha custard, taro mochi, rice flour and wheat flour.",
+        "yue": "香港抹茶芋泥麻糬蒸包係茶樓甜包，用抹茶卡士達、芋泥麻糬、米粉同麵粉整，茶香柔和。"
+      },
+      "ingredients": [
+        "matcha powder",
+        "taro mochi",
+        "rice flour",
+        "wheat flour"
+      ],
+      "dietaryTags": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "image": {
+        "path": "images/hk-dish-3030-hong-kong-matcha-taro-mochi-steamed-bun.png",
+        "alt": {
+          "en": "One Hong Kong Matcha taro mochi Steamed Bun on a small tea-house plate.",
+          "yue": "一個香港抹茶芋泥麻糬蒸包，用茶樓碟上枱。"
+        }
+      },
+      "imagePrompt": "Use case: photorealistic-natural. Asset type: native square catalog image for an offline Hong Kong dessert index. Primary request: one authentic Hong Kong Matcha taro mochi Steamed Bun. Show a soft green bun with taro mochi filling, natural tea-house tableware, warm window light, one serving, full vessel visible, no people, text, logos, watermark, packaging, or unrelated dishes."
+    }
+  ]
+}
+

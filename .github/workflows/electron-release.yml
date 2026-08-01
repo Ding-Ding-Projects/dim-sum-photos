@@ -23,6 +23,16 @@ jobs:
           cache-dependency-path: apps/dim-sum-atlas/package-lock.json
       - run: npm ci
       - run: npm run validate:data
+      - name: Bundle the public catalog into the app
+        shell: pwsh
+        run: |
+          Copy-Item '../../catalog/index.json' 'catalog.json' -Force
+          $catalog = Get-Content 'catalog.json' -Raw | ConvertFrom-Json
+          if (Test-Path '../../catalog/additions-3009-3030.json') {
+            $additions = Get-Content '../../catalog/additions-3009-3030.json' -Raw | ConvertFrom-Json
+            $catalog.dishes = @($catalog.dishes) + @($additions.dishes)
+          }
+          $catalog | ConvertTo-Json -Depth 20 | Set-Content 'catalog.json' -Encoding utf8
       - name: Package portable Windows app
         shell: pwsh
         run: npx --no-install @electron/packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
