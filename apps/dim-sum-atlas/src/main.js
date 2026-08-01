@@ -5,7 +5,7 @@ const { pathToFileURL, fileURLToPath } = require('url');
 const os = require('os');
 const { spawnSync } = require('child_process');
 const https = require('https');
-const IMAGE_RELEASE_BASE = 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/untagged-6aa56ec6d2b6321dbbe5/';
+const IMAGE_RELEASE_BASE = 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/';
 
 function createWindow() {
   const window = new BrowserWindow({
