@@ -21,3 +21,4 @@ dialog form { display: grid; gap: 14px; min-width: 280px; }
 dialog label { display: grid; gap: 6px; font-weight: 600; }
 dialog input, dialog select { min-height: 38px; border: 1px solid #b5c7bc; border-radius: 10px; padding: 7px 10px; font: inherit; }
 dialog button { min-height: 38px; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.changelog-entry { padding: 18px; border-radius: 18px; background: #eef6f0; border: 1px solid #c6dccd; }
