@@ -17,6 +17,11 @@ function Upload-WithBackoff([string]$Tag, [IO.FileInfo]$File) {
     & gh release upload $Tag $File.FullName --repo $Repository
     if ($LASTEXITCODE -eq 0) { return }
     $delay = [Math]::Min(300, 15 * $attempt)
+    $reset = gh api rate_limit --jq '.resources.core.reset' 2>$null
+    if ($reset -match '^\d+$') {
+      $untilReset = [int64]$reset - [DateTimeOffset]::UtcNow.ToUnixTimeSeconds() + 5
+      if ($untilReset -gt $delay) { $delay = $untilReset }
+    }
     Write-Warning "Upload failed for $($File.Name) on attempt $attempt; retrying in $delay seconds."
     Start-Sleep -Seconds $delay
   }
