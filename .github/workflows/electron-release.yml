@@ -60,11 +60,19 @@ jobs:
         run: |
           $tag = "desktop-$($env:GITHUB_RUN_NUMBER)-$($env:GITHUB_SHA.Substring(0,8))"
           $catalog = Get-Content "catalog/index.json" -Raw | ConvertFrom-Json
+          $seen = [System.Collections.Generic.HashSet[string]]::new([string[]]$catalog.dishes.id)
+          Get-ChildItem "catalog/additions-*.json" | Sort-Object Name | ForEach-Object {
+            $additions = Get-Content $_.FullName -Raw | ConvertFrom-Json
+            foreach ($dish in @($additions.dishes)) { if ($seen.Add($dish.id)) { $catalog.dishes += $dish } }
+          }
           $verified = @($catalog.dishes | Where-Object { $_.image.path })
           $dish = $verified[($env:GITHUB_RUN_NUMBER - 1) % $verified.Count]
           $photoName = Split-Path $dish.image.path -Leaf
           $photo = "apps/dim-sum-atlas/$photoName"
-          Invoke-WebRequest -Uri "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/$photoName" -OutFile $photo
+          $number = [int]([regex]::Match($dish.id, '\d+$').Value)
+          $part = if ($number -le 995) { 1 } else { [math]::Floor(($number - 996) / 990) + 2 }
+          $imageRelease = if ($part -eq 1) { 'catalog-v1' } else { "catalog-v1-part-{0:D3}" -f $part }
+          Invoke-WebRequest -Uri "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/$imageRelease/$photoName" -OutFile $photo
           $codeName = "$($dish.name.en) · $($dish.name.zhHant)"
           $assets = @("apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip", $photo) + @(Get-ChildItem 'apps/dim-sum-atlas/dist/*.exe' | ForEach-Object { $_.FullName })
           if ($assets.Count -lt 3) { throw 'The Windows installer was not produced.' }
