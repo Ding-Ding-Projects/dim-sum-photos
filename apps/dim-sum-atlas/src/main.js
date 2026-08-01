@@ -28,7 +28,7 @@ ipcMain.handle('catalog:read', () => {
   const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
   catalog.dishes = catalog.dishes.map((dish) => ({
     ...dish,
-    image: dish.image ? { ...dish.image, assetUrl: pathToFileURL(path.resolve(__dirname, '..', '..', '..', 'dim-sum', dish.image.path)).toString(), releaseUrl: IMAGE_RELEASE_BASE + dish.image.path.replaceAll('\\', '/') } : dish.image
+    image: dish.image ? { ...dish.image, assetUrl: pathToFileURL(path.resolve(__dirname, '..', '..', '..', 'dim-sum', dish.image.path)).toString(), releaseUrl: IMAGE_RELEASE_BASE + path.basename(dish.image.path) } : dish.image
   }));
   return catalog;
 });
