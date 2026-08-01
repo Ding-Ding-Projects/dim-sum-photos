@@ -1,6 +1,6 @@
 # Windows Electron companion
 
-The installed app is Windows-only, local-first, and caches approved release images under the Electron user-data directory. It provides the full gallery, favorites, details, regex search, settings, bulk selection, export formats, ZIP, and portable 7z operations.
+The installed app is Windows-only, local-first, and caches approved release images under the Electron user-data directory. It provides the full gallery, favorites, details, regex search, settings, bulk selection, export formats, ZIP, and portable 7z operations. Settings also include an optional narrator, off by default, with English, Cantonese, or serialized bilingual speech and a non-overlapping queue.
 
 ## Failure modes and security
 
