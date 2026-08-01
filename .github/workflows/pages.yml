@@ -18,7 +18,8 @@ jobs:
       - uses: actions/configure-pages@v5
       - name: Prepare site data
         shell: bash
-        run: cp catalog/index.json site/catalog.json
+        run: |
+          node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('catalog/index.json'));const a=JSON.parse(fs.readFileSync('catalog/additions-3009-3030.json'));const seen=new Set(c.dishes.map(d=>d.id));c.dishes.push(...a.dishes.filter(d=>!seen.has(d.id)));fs.writeFileSync('site/catalog.json',JSON.stringify(c,null,2));"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
