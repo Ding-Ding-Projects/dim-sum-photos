@@ -8,6 +8,7 @@ body { font-family: var(--appearance-font-family, system-ui); font-weight: var(-
 button, input, select, dialog, .card, .changelog-card, .about-grid > div { border-radius: var(--appearance-radius); }
 main, header, nav { gap: var(--appearance-spacing); }
 .appearance-controls, .regex-guide { margin-top: 20px; padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--text) 18%, transparent); }
+.surprise-image { display: block; width: 84px; height: 84px; margin-top: 10px; object-fit: cover; border-radius: 16px; border: 1px solid var(--green); }
 .appearance-controls label { display: grid; gap: 6px; margin: 10px 0; }
 .appearance-controls input[type="range"] { width: 100%; }
 .appearance-actions { display: flex; flex-wrap: wrap; gap: 8px; }
