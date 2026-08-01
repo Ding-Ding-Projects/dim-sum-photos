@@ -41,3 +41,7 @@ dialog button { min-height: 38px; border: 0; border-radius: 999px; padding: 8px 
 .changelog-tools { display:flex; flex-wrap:wrap; gap:9px; margin:18px 0; }
 .changelog-tools input { min-height:38px; border:1px solid #b5c7bc; border-radius:10px; padding:7px 10px; font:inherit; }
 .changelog-tools input[type=search] { flex:1; min-width:220px; }
+.archive-tools { margin-top: 20px; padding-top: 16px; border-top: 1px solid #c7d4cc; display: grid; gap: 10px; }
+.archive-tools label { display: grid; gap: 5px; }
+.archive-tools input, .archive-tools select { min-height: 36px; }
+.archive-output { max-height: 180px; overflow: auto; white-space: pre-wrap; background: #edf3ee; padding: 10px; border-radius: 10px; }
