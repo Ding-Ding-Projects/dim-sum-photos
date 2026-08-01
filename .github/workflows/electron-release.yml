@@ -47,7 +47,9 @@ jobs:
         run: npx --no-install @electron/packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
       - name: Zip portable app
         shell: pwsh
-        run: Compress-Archive -Path 'release/Dim Sum Atlas-win32-x64/*' -DestinationPath 'dim-sum-atlas-win-x64.zip'
+        run: |
+          7z a -tzip -mx=1 'dim-sum-atlas-win-x64.zip' './release/Dim Sum Atlas-win32-x64/*'
+          if (-not (Test-Path 'dim-sum-atlas-win-x64.zip')) { throw 'Portable ZIP was not produced.' }
       - name: Publish immutable release
         working-directory: ${{ github.workspace }}
         env:
