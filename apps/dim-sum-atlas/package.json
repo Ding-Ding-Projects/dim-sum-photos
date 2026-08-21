@@ -1,6 +1,6 @@
 {
   "name": "dim-sum-atlas",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "A Material 3 Electron gallery for the bundled dim-sum catalog.",
   "author": "Ding-Ding Projects",
