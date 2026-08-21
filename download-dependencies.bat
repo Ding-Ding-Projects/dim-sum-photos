@@ -19,6 +19,7 @@ if not "!RC!"=="0" exit /b !RC!
 if not "%SILENT%"=="1" echo Pinned Node.js 22.14.0 and project dependencies are ready.
 endlocal & exit /b 0
 :probe
+if "%DIM_SUM_BATCH_FAIL%"=="dependency" endlocal & exit /b 9
 call npm ci --ignore-scripts
 if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo download-dependencies.post-npm

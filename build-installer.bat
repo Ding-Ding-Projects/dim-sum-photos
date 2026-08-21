@@ -19,7 +19,6 @@ if "!RC!"=="0" node ..\..\scripts\verify-installer.mjs --signature-status=!SIGNA
 set "RC=!ERRORLEVEL!"
 if "!RC!"=="0" node ..\..\scripts\generate-update-metadata.mjs --candidate=true
 set "RC=!ERRORLEVEL!"
-popd
 if not "!RC!"=="0" goto failure
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\assert-installer-fresh.ps1" -Sentinel "%BUILD_SENTINEL%"
 if errorlevel 1 goto failure
@@ -27,8 +26,11 @@ if /I not "%SILENT%"=="1" echo Unsigned Squirrel.Windows installer verified inde
 set "RC=0"
 goto cleanup
 :probe
+if "%DIM_SUM_BATCH_FAIL%"=="dependency" (call "%~dp0download-dependencies.bat" & set "RC=!ERRORLEVEL!" & endlocal & exit /b %RC%)
+pushd "%~dp0apps\dim-sum-atlas"
+set "DID_PUSHD=1"
 call "%~dp0download-dependencies.bat"
-if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
+if errorlevel 1 goto probe_failure
 call npm run assemble:catalog
 if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.post-assemble
@@ -37,10 +39,14 @@ if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.post-build
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.freshness-verifier
 endlocal & exit /b 0
+:probe_failure
+set "RC=!ERRORLEVEL!"
+if defined DID_PUSHD (popd >nul 2>nul & set "DID_PUSHD=")
+endlocal & exit /b %RC%
 :failure
 set "RC=!ERRORLEVEL!"
 :cleanup
 if defined BUILD_SENTINEL del /q "%BUILD_SENTINEL%" >nul 2>nul
 if not defined RC set "RC=1"
-if defined DID_PUSHD popd >nul 2>nul
+if defined DID_PUSHD (popd >nul 2>nul & set "DID_PUSHD=")
 endlocal & exit /b %RC%

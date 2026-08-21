@@ -23,9 +23,10 @@ set "RC=!ERRORLEVEL!"
 if defined DID_PUSHD popd >nul 2>nul
 endlocal & exit /b %RC%
 :probe
+pushd "%~dp0apps\dim-sum-atlas"
 call "%~dp0download-dependencies.bat"
-if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
-if "%DIM_SUM_BATCH_FAIL%"=="1" (call npm run assemble:catalog & >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build.failure-propagated & endlocal & exit /b 7)
+if errorlevel 1 goto probe_failure
+if "%DIM_SUM_BATCH_FAIL%"=="1" (call npm run assemble:catalog & >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build.failure-propagated & set "RC=7" & goto probe_cleanup)
 call npm run assemble:catalog
 if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build.post-assemble
@@ -33,3 +34,8 @@ call npm run build:installer
 if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build.post-build
 endlocal & exit /b 0
+:probe_failure
+set "RC=!ERRORLEVEL!"
+:probe_cleanup
+popd >nul 2>nul
+endlocal & exit /b %RC%
