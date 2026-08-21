@@ -45,7 +45,7 @@ function createHttpsTransport() {
     request(url, options = {}) {
       return new Promise((resolve, reject) => {
         const request = https.get(url, { headers: { 'User-Agent': 'Dim-Sum-Atlas-Updater/1', Accept: 'application/json', ...options.headers } }, (response) => {
-          if (options.streamTo) {
+          if (options.streamTo && response.statusCode === 200) {
             const file = fs.createWriteStream(options.streamTo, { flags: 'wx' });
             file.on('error', reject);
             response.on('data', (chunk) => { if (typeof options.onChunk === 'function') options.onChunk(chunk); });
@@ -53,8 +53,8 @@ function createHttpsTransport() {
             file.on('finish', () => file.close(() => resolve({ statusCode: response.statusCode, headers: response.headers })));
             return;
           }
-          const chunks = []; let bytes = 0;
-          response.on('data', (chunk) => { bytes += chunk.length; chunks.push(chunk); if (typeof options.onChunk === 'function') options.onChunk(chunk); });
+          const chunks = [];
+          response.on('data', (chunk) => { chunks.push(chunk); if (!options.streamTo && typeof options.onChunk === 'function') options.onChunk(chunk); });
           response.on('end', () => resolve({ statusCode: response.statusCode, headers: response.headers, body: Buffer.concat(chunks) }));
         });
         if (options.signal) options.signal.addEventListener('abort', () => request.destroy(Object.assign(new Error('Update download cancelled.'), { name: 'AbortError' })), { once: true });

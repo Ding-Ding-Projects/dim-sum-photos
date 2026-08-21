@@ -240,3 +240,47 @@ test('recovery rejects a staged feed that escapes storage through a symlink', as
     fs.rmSync(outside, { recursive: true, force: true }); fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('streaming redirects reach the final HTTPS package without temp-file collisions', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-redirect-'));
+  const body = Buffer.from('redirected package');
+  const metadata = feed('1.2.0', body);
+  const calls = [];
+  const transport = {
+    streaming: true,
+    async request(url, options = {}) {
+      calls.push(url);
+      if (url.includes('/feed')) return { statusCode: 200, headers: {}, body: metadata };
+      if (url.endsWith('/A')) return { statusCode: 302, headers: { location: 'https://updates.example.test/B' } };
+      fs.writeFileSync(options.streamTo, Buffer.alloc(0), { flag: 'wx' });
+      for (let offset = 0; offset < body.length; offset += 4) { const chunk = body.subarray(offset, offset + 4); fs.appendFileSync(options.streamTo, chunk); options.onChunk(chunk); }
+      return { statusCode: 200, headers: {} };
+    }
+  };
+  const engine = new UpdaterEngine({ currentVersion: '1.1.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport, maxRetries: 0 });
+  await engine.check();
+  engine.state.package.url = 'https://updates.example.test/A';
+  const ready = await engine.download();
+  assert.equal(ready.state, 'ready');
+  assert.equal(fs.statSync(ready.package.packagePath).size, body.length);
+  assert.equal(calls.includes('https://updates.example.test/B'), true);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('streaming redirect limit fails and cleans temporary state', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-redirect-limit-'));
+  const body = Buffer.from('redirect package');
+  const metadata = feed('1.2.0', body);
+  const transport = {
+    streaming: true,
+    async request(url) {
+      if (url.includes('/feed')) return { statusCode: 200, headers: {}, body: metadata };
+      return { statusCode: 302, headers: { location: url } };
+    }
+  };
+  const engine = new UpdaterEngine({ currentVersion: '1.1.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport, maxRetries: 0 });
+  await engine.check(); engine.state.package.url = 'https://updates.example.test/loop';
+  await assert.rejects(() => engine.download(), /redirect limit/);
+  assert.equal(fs.readdirSync(root).length, 0);
+  fs.rmSync(root, { recursive: true, force: true });
+});
