@@ -84,6 +84,12 @@ assert.match(workflow, /update-metadata\.json/);
 assert.match(read('build-installer.bat'), /generate-update-metadata\.mjs --candidate=true/);
 assert.match(read('build-installer.bat'), /Get-AuthenticodeSignature/);
 assert.match(read('build-installer.bat'), /NotSigned/);
+assert.match(read('build-installer.bat'), /assert-installer-fresh\.ps1/);
+assert.match(read('build-installer.bat'), /clean-installer-output\.mjs/);
+for (const file of ['build.bat', 'build-installer.bat', 'download-dependencies.bat']) assert.doesNotMatch(read(file), /^\s*npm(?:\.cmd)?\s/m, `${file} contains a bare npm invocation`);
+assert.ok(fs.existsSync(path.join(root, 'scripts/assert-installer-fresh.ps1')));
+assert.ok(fs.existsSync(path.join(root, 'scripts/test-root-batch-calls.ps1')));
+assert.ok(fs.existsSync(path.join(root, 'scripts/test-installer-fresh.ps1')));
 assert.match(read('scripts/portable-7z.json'), /sha256/);
 for (const workflowPath of ['.github/workflows/electron-release.yml', '.github/workflows/pages.yml']) {
   const workflowText = read(workflowPath).replace(/\.test\(/g, '');
