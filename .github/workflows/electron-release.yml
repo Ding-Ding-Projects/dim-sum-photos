@@ -17,6 +17,7 @@ jobs:
     steps:
       - name: Record workflow start
         id: timing
+        working-directory: ${{ github.workspace }}
         shell: pwsh
         run: "\"workflow_start=$((Get-Date).ToUniversalTime().ToString('o'))\" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8"
       - uses: actions/checkout@v4

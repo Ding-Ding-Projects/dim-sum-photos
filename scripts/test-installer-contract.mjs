@@ -23,6 +23,7 @@ assert.doesNotMatch(JSON.stringify(pkg), /nsis/i, 'NSIS must not remain in packa
 assert.doesNotMatch(workflow, /nsis/i, 'NSIS must not remain in the release workflow');
 assert.match(workflow, /Record workflow start/);
 assert.ok(workflow.indexOf('Record workflow start') < workflow.indexOf('actions/checkout@'), 'workflow timing must be the literal first step');
+assert.match(workflow, /Record workflow start[\s\S]*?working-directory: \$\{\{ github\.workspace \}\}/);
 assert.match(workflow, /steps\.timing\.outputs\.workflow_start/);
 assert.match(workflow, /gh release create[\s\S]*--target \$env:GITHUB_SHA/);
 assert.match(workflow, /catalog release/);
