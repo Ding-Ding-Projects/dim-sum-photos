@@ -1,10 +1,13 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, autoUpdater } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { pathToFileURL, fileURLToPath } = require('url');
 const os = require('os');
 const { spawnSync } = require('child_process');
 const https = require('https');
+const { UpdaterEngine, validHttpsUrl } = require('./updater/engine');
+const isPrimaryInstance = app.requestSingleInstanceLock();
+if (!isPrimaryInstance) app.quit();
 const IMAGE_RELEASE_BASE = 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/';
 function releaseUrlForDish(dish) { const number = Number(String(dish.id || '').match(/(\d+)$/)?.[1] || 1); const part = number <= 995 ? 1 : Math.floor((number - 996) / 990) + 2; const tag = part === 1 ? 'catalog-v1' : `catalog-v1-part-${String(part).padStart(3, '0')}`; return `https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/${tag}/${path.basename(dish.image.path)}`; }
 
@@ -23,6 +26,32 @@ function createWindow() {
   });
   window.loadFile(path.join(__dirname, 'index.html'));
 }
+
+let updater = null;
+function setupUpdater() {
+  // Updates are deliberately unavailable in development, portable launches, non-Windows
+  // builds, and installs without an explicitly configured credential-free HTTPS feed.
+  const feedUrl = process.env.DIM_SUM_ATLAS_UPDATE_FEED || '';
+  if (!isPrimaryInstance || process.platform !== 'win32' || !app.isPackaged || !validHttpsUrl(feedUrl)) return null;
+  updater = new UpdaterEngine({
+    currentVersion: app.getVersion(),
+    feedUrl,
+    storageRoot: path.join(app.getPath('userData'), 'updates'),
+    runtime: { quitAndInstall: () => autoUpdater.quitAndInstall() }
+  });
+  autoUpdater.setFeedURL({ url: feedUrl });
+  updater.onState((state) => BrowserWindow.getAllWindows().forEach((window) => window.webContents.send('updater:state', state)));
+  updater.start();
+  updater.check({ trigger: 'startup' }).catch(() => undefined);
+  return updater;
+}
+
+ipcMain.handle('updater:state', () => updater ? updater.snapshot() : { state: 'disabled', currentVersion: app.getVersion(), availableVersion: null, progress: null, error: 'Automatic updates are available only for a packaged Windows install with a configured HTTPS feed.', lastCheckedAt: null, stagedPath: null });
+ipcMain.handle('updater:check', () => updater ? updater.check({ trigger: 'manual' }) : Promise.reject(new Error('Automatic updates are unavailable for this launch.')));
+ipcMain.handle('updater:download', () => updater ? updater.download() : Promise.reject(new Error('Automatic updates are unavailable for this launch.')));
+ipcMain.handle('updater:cancel', () => updater ? updater.cancel() : false);
+ipcMain.handle('updater:work-state', (_event, state) => updater ? updater.setWorkState(state) : { dirty: false, inFlight: false });
+ipcMain.handle('updater:restart', () => updater ? updater.restart() : Promise.reject(new Error('Automatic updates are unavailable for this launch.')));
 
 ipcMain.handle('catalog:read', () => {
   const bundledCatalog = path.resolve(__dirname, '..', 'catalog.json');
@@ -133,11 +162,13 @@ ipcMain.handle('archive:run', (_event, { operation, archivePath, inputPath, outp
 });
 
 app.whenReady().then(() => {
+  if (!isPrimaryInstance) return;
   if (process.platform !== 'win32') {
     dialog.showErrorBox('Windows only', 'Dim Sum Atlas is a Windows-only desktop app.');
     app.quit();
     return;
   }
+  setupUpdater();
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
