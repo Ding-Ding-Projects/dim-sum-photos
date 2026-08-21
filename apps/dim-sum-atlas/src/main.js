@@ -5,9 +5,11 @@ const { pathToFileURL, fileURLToPath } = require('url');
 const os = require('os');
 const { spawnSync } = require('child_process');
 const https = require('https');
+const { handleSquirrelLifecycle } = require('./updater/squirrel-lifecycle');
+const squirrelLifecycleHandled = handleSquirrelLifecycle(process.argv, { quit: () => app.quit() });
 const { UpdaterEngine, validHttpsUrl } = require('./updater/engine');
 const { createSquirrelRuntime } = require('./updater/squirrel-runtime');
-const isPrimaryInstance = app.requestSingleInstanceLock();
+const isPrimaryInstance = squirrelLifecycleHandled ? false : app.requestSingleInstanceLock();
 if (!isPrimaryInstance) app.quit();
 const IMAGE_RELEASE_BASE = 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/';
 function releaseUrlForDish(dish) { const number = Number(String(dish.id || '').match(/(\d+)$/)?.[1] || 1); const part = number <= 995 ? 1 : Math.floor((number - 996) / 990) + 2; const tag = part === 1 ? 'catalog-v1' : `catalog-v1-part-${String(part).padStart(3, '0')}`; return `https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/${tag}/${path.basename(dish.image.path)}`; }
@@ -162,7 +164,7 @@ ipcMain.handle('archive:run', (_event, { operation, archivePath, inputPath, outp
 });
 
 app.whenReady().then(() => {
-  if (!isPrimaryInstance) return;
+  if (squirrelLifecycleHandled || !isPrimaryInstance) return;
   if (process.platform !== 'win32') {
     dialog.showErrorBox('Windows only', 'Dim Sum Atlas is a Windows-only desktop app.');
     app.quit();
