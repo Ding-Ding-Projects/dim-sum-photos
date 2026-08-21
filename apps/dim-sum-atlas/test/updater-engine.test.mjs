@@ -63,6 +63,15 @@ test('metadata validation rejects a same-version or malformed package', () => {
   assert.equal(validPackageFilename('Dim.Sum.Atlas-full.nupkg', '1.1.0'), false);
 });
 
+test('an installed 0.1.1 copy stays idle for equal 0.1.1 metadata', async () => {
+  const body = Buffer.from('same-version package');
+  const engine = new UpdaterEngine({ currentVersion: '0.1.1', feedUrl: 'https://updates.example.test/feed', transport: transportFor(feed('0.1.1', body), body) });
+  const state = await engine.check();
+  assert.equal(state.state, 'idle');
+  assert.equal(state.availableVersion, null);
+  assert.equal(state.error, null);
+});
+
 test('major updates are BETERED by default and require exact target-major authorization', () => {
   const body = Buffer.from('major package');
   const metadata = { statusCode: 200, body: feed('2.0.0', body) };

@@ -33,8 +33,8 @@ function createWindow() {
 
 let updater = null;
 function setupUpdater() {
-  // Updates are deliberately unavailable in development, portable launches, non-Windows
-  // builds, and installs without an explicitly configured credential-free HTTPS feed.
+  // The committed latest-release URL is a mutable selector; version, channel, package
+  // identity, size, and hash validation remain authoritative before any update is accepted.
   const feedUrl = selectUpdateFeed(process.env);
   if (!updaterEligible({ platform: process.platform, packaged: app.isPackaged, primary: isPrimaryInstance }) || !validHttpsUrl(feedUrl)) return null;
   updater = new UpdaterEngine({
