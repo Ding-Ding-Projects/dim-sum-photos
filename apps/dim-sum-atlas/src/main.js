@@ -41,7 +41,7 @@ function setupUpdater() {
     currentVersion: app.getVersion(),
     feedUrl,
     storageRoot: path.join(app.getPath('userData'), 'updates'),
-    runtime: createSquirrelRuntime({ updateExe: path.resolve(path.dirname(process.execPath), '..', 'Update.exe'), quit: () => app.quit() })
+      runtime: createSquirrelRuntime({ updateExe: path.resolve(path.dirname(process.execPath), '..', 'Update.exe'), processStart: path.basename(process.execPath), quit: () => app.quit() })
   });
   updater.onState((state) => BrowserWindow.getAllWindows().forEach((window) => window.webContents.send('updater:state', state)));
   updater.start();
