@@ -12,16 +12,23 @@ node ..\..\scripts\clean-installer-output.mjs
 call npm run assemble:catalog
 if errorlevel 1 goto failure
 call npm run build:installer
-set "RC=!ERRORLEVEL!"
-if "!RC!"=="0" for /f "delims=" %%S in ('powershell.exe -NoProfile -ExecutionPolicy Bypass -File ..\..\scripts\get-installer-signature.ps1 -Dist "!CD!\dist\squirrel-windows"') do set "SIGNATURE=%%S"
-if "!RC!"=="0" if /I not "!SIGNATURE!"=="NotSigned" set "RC=1"
-if "!RC!"=="0" node ..\..\scripts\verify-installer.mjs --signature-status=!SIGNATURE!
-set "RC=!ERRORLEVEL!"
-if "!RC!"=="0" node ..\..\scripts\generate-update-metadata.mjs --candidate=true
-set "RC=!ERRORLEVEL!"
-if not "!RC!"=="0" goto failure
+if errorlevel 1 goto failure
+set "SIGNATURE="
+set "SIGNATURE_FILE=%TEMP%\dim-sum-installer-signature-%RANDOM%.txt"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ..\..\scripts\get-installer-signature.ps1 -Dist "!CD!\dist\squirrel-windows" >"!SIGNATURE_FILE!"
+if errorlevel 1 goto failure
+set /p "SIGNATURE=<%SIGNATURE_FILE%"
+if not defined SIGNATURE (set "RC=1" & goto failure)
+if /I not "!SIGNATURE!"=="NotSigned" (set "RC=1" & goto failure)
+node ..\..\scripts\verify-installer.mjs --signature-status=!SIGNATURE!
+if errorlevel 1 goto failure
+if defined DIM_SUM_BATCH_PROBE_LOG >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.signature-verifier
+node ..\..\scripts\generate-update-metadata.mjs --candidate=true
+if errorlevel 1 goto failure
+if defined DIM_SUM_BATCH_PROBE_LOG >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.metadata
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\assert-installer-fresh.ps1" -Sentinel "%BUILD_SENTINEL%"
 if errorlevel 1 goto failure
+if defined DIM_SUM_BATCH_PROBE_LOG >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.freshness
 if /I not "%SILENT%"=="1" echo Unsigned Squirrel.Windows installer verified independently as NotSigned.
 set "RC=0"
 goto cleanup
@@ -37,18 +44,23 @@ if errorlevel 1 goto probe_failure
 call npm run build:installer
 if errorlevel 1 goto probe_failure
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.post-build
->>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.freshness-verifier
+>>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.signature-helper
+if "%DIM_SUM_BATCH_SIGNATURE_FAIL%"=="1" (set "RC=1" & goto probe_failure)
+>>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.signature-verifier
+>>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.metadata
+>>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.freshness
 set "RC=0"
 goto probe_cleanup
 :probe_failure
-set "RC=!ERRORLEVEL!"
+if not defined RC set "RC=!ERRORLEVEL!"
 :probe_cleanup
 if defined DID_PUSHD (popd >nul 2>nul & set "DID_PUSHD=")
 endlocal & exit /b %RC%
 :failure
-set "RC=!ERRORLEVEL!"
+if not defined RC set "RC=!ERRORLEVEL!"
 :cleanup
 if defined BUILD_SENTINEL del /q "%BUILD_SENTINEL%" >nul 2>nul
+if defined SIGNATURE_FILE del /q "%SIGNATURE_FILE%" >nul 2>nul
 if not defined RC set "RC=1"
 if defined DID_PUSHD (popd >nul 2>nul & set "DID_PUSHD=")
 endlocal & exit /b %RC%
