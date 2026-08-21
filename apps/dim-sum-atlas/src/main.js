@@ -9,6 +9,7 @@ const { handleSquirrelLifecycle } = require('./updater/squirrel-lifecycle');
 const squirrelLifecycleHandled = handleSquirrelLifecycle(process.argv, { quit: () => app.quit() });
 const { UpdaterEngine, validHttpsUrl } = require('./updater/engine');
 const { createSquirrelRuntime } = require('./updater/squirrel-runtime');
+const { selectUpdateFeed, updaterEligible } = require('./updater/feed-config');
 const isPrimaryInstance = squirrelLifecycleHandled ? false : app.requestSingleInstanceLock();
 if (!isPrimaryInstance) app.quit();
 const IMAGE_RELEASE_BASE = 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/';
@@ -32,10 +33,10 @@ function createWindow() {
 
 let updater = null;
 function setupUpdater() {
-  // Updates are deliberately unavailable in development, portable launches, non-Windows
-  // builds, and installs without an explicitly configured credential-free HTTPS feed.
-  const feedUrl = process.env.DIM_SUM_ATLAS_UPDATE_FEED || '';
-  if (!isPrimaryInstance || process.platform !== 'win32' || !app.isPackaged || !validHttpsUrl(feedUrl)) return null;
+  // The committed latest-release URL is a mutable selector; version, channel, package
+  // identity, size, and hash validation remain authoritative before any update is accepted.
+  const feedUrl = selectUpdateFeed(process.env);
+  if (!updaterEligible({ platform: process.platform, packaged: app.isPackaged, primary: isPrimaryInstance }) || !validHttpsUrl(feedUrl)) return null;
   updater = new UpdaterEngine({
     currentVersion: app.getVersion(),
     feedUrl,
