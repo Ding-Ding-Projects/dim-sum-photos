@@ -30,17 +30,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Enable Electron install script explicitly
         run: npm rebuild electron --foreground-scripts
-      - name: Bundle public catalog
-        shell: pwsh
-        run: |
-          Copy-Item '../../catalog/index.json' 'catalog.json' -Force
-          $catalog = Get-Content 'catalog.json' -Raw | ConvertFrom-Json
-          $seen = [System.Collections.Generic.HashSet[string]]::new([string[]]$catalog.dishes.id)
-          Get-ChildItem '../../catalog/additions-*.json' | Sort-Object Name | ForEach-Object {
-            $additions = Get-Content $_.FullName -Raw | ConvertFrom-Json
-            foreach ($dish in @($additions.dishes)) { if ($seen.Add($dish.id)) { $catalog.dishes += $dish } }
-          }
-          $catalog | ConvertTo-Json -Depth 20 | Set-Content 'catalog.json' -Encoding utf8
+      - name: Assemble deterministic catalog
+        run: npm run assemble:catalog
       - name: Pin and verify portable 7-Zip
         shell: pwsh
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File '../../scripts/bootstrap-portable-7z.ps1'
@@ -81,6 +72,9 @@ jobs:
           $codeName = "$($dish.name.en) · $($dish.name.zhHant)"
           $photoHash = (Get-FileHash $photo -Algorithm SHA256).Hash.ToLowerInvariant()
           $assets += Get-Item $photo
+          node 'scripts/generate-update-metadata.mjs' "--tag=$tag" "--commit=$env:GITHUB_SHA" "--repo=$env:GITHUB_REPOSITORY"
+          $metadata = Get-Item 'apps/dim-sum-atlas/dist/squirrel-windows/update-metadata.json'
+          $assets += $metadata
           $notes = "Windows Squirrel.Windows installer, intentionally unsigned.`n`nTarget commit: $env:GITHUB_SHA`nCode name: $codeName`nCatalog record: $($dish.id)`nPhoto provenance: catalog release $imageRelease, asset $photoName, SHA-256 $photoHash.`nPackaging provenance: electron-builder 26.15.3, Squirrel.Windows, signing disabled; independent Authenticode status: NotSigned.`n"
           gh release create $tag --target $env:GITHUB_SHA --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --draft --notes $notes ($assets.FullName)
           $end = (Get-Date).ToUniversalTime()
