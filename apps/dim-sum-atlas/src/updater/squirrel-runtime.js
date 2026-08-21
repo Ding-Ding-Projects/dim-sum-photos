@@ -3,10 +3,11 @@
 const fs = require('fs');
 const { spawn } = require('child_process');
 
-function createSquirrelRuntime({ updateExe, spawnProcess = spawn, quit = () => {} } = {}) {
+function createSquirrelRuntime({ updateExe, spawnProcess = spawn, quit = () => {}, fsModule = fs } = {}) {
   return {
     installPackage(feedDirectory, identity) {
       if (!feedDirectory || !identity || !identity.packagePath || !identity.releasesLine) throw new Error('Squirrel feed identity is incomplete.');
+      if (!updateExe || !fsModule.existsSync(updateExe)) throw new Error('Squirrel Update.exe is not present in this installed package.');
       if (!fs.existsSync(feedDirectory) || !fs.existsSync(`${feedDirectory}/RELEASES`) || !fs.existsSync(identity.packagePath)) throw new Error('Squirrel feed directory is incomplete.');
       return new Promise((resolve, reject) => {
         const child = spawnProcess(updateExe, ['--update', feedDirectory], { detached: true, windowsHide: true, stdio: 'ignore', shell: false });

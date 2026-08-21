@@ -31,6 +31,10 @@ function validHttpsUrl(value) {
   } catch (_) { return false; }
 }
 
+function validPackageFilename(filename, version) {
+  return typeof filename === 'string' && filename.length <= 180 && filename === path.basename(filename) && /^[A-Za-z0-9][A-Za-z0-9._-]*\.nupkg$/i.test(filename) && filename.includes(version);
+}
+
 function safeState(state) {
   return { ...state, package: state.package ? { ...state.package } : undefined };
 }
@@ -132,7 +136,7 @@ class UpdaterEngine {
     if (!metadata || typeof metadata.version !== 'string' || !/^\d+\.\d+\.\d+$/.test(metadata.version) || !pkg || typeof pkg.url !== 'string' || typeof pkg.sha256 !== 'string') {
       throw new Error('Update metadata is missing a valid version or package identity.');
     }
-    if (!validHttpsUrl(pkg.url) || !/^[a-f0-9]{64}$/i.test(pkg.sha256) || !Number.isSafeInteger(pkg.size) || pkg.size <= 0 || pkg.size > MAX_PACKAGE_BYTES) throw new Error('Update package metadata is invalid.');
+    if (!validHttpsUrl(pkg.url) || !/^[a-f0-9]{64}$/i.test(pkg.sha256) || !Number.isSafeInteger(pkg.size) || pkg.size <= 0 || pkg.size > MAX_PACKAGE_BYTES || !validPackageFilename(pkg.filename || this.path.basename(new URL(pkg.url).pathname), metadata.version)) throw new Error('Update package metadata is invalid.');
     if (metadata.channel !== undefined && metadata.channel !== 'stable') throw new Error('Update metadata is for an unsupported channel.');
     if (!this.allowMajor && majorVersion(metadata.version) !== majorVersion(this.currentVersion)) throw new Error('Major-version updates are not enabled for this installation.');
     if (compareVersions(metadata.version, this.currentVersion) <= 0) return null;
@@ -194,7 +198,7 @@ class UpdaterEngine {
         if (hash !== pkg.sha256) throw new Error('Update package hash does not match metadata.');
         if (generation !== this.generation) throw new Error('Update download was superseded.');
         const sha1 = crypto.createHash('sha1').update(body).digest('hex');
-        const releasesLine = `${sha1} ${pkg.size} ${pkg.filename}\n`;
+        const releasesLine = `${sha1} ${pkg.filename} ${pkg.size}\n`;
         this.fs.mkdirSync(feedDirectory, { recursive: true });
         this.fs.writeFileSync(temp, body, { flag: 'wx' });
         this.fs.renameSync(temp, packagePath);
@@ -237,4 +241,4 @@ class UpdaterEngine {
   }
 }
 
-module.exports = { UpdaterEngine, STATES, compareVersions, validHttpsUrl, createHttpsTransport };
+module.exports = { UpdaterEngine, STATES, compareVersions, validHttpsUrl, validPackageFilename, createHttpsTransport };

@@ -7,7 +7,7 @@ import test from 'node:test';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { UpdaterEngine, compareVersions } = require('../src/updater/engine.js');
+const { UpdaterEngine, compareVersions, validPackageFilename } = require('../src/updater/engine.js');
 const { createSquirrelRuntime } = require('../src/updater/squirrel-runtime.js');
 
 function feed(version, body, extra = {}) {
@@ -16,7 +16,7 @@ function feed(version, body, extra = {}) {
     channel: 'stable',
     package: {
       url: 'https://updates.example.test/Dim.Sum.Atlas.nupkg',
-      filename: 'Dim.Sum.Atlas.nupkg',
+      filename: `Dim.Sum.Atlas-${version}-full.nupkg`,
       size: body.length,
       sha256: crypto.createHash('sha256').update(body).digest('hex')
     },
@@ -57,6 +57,9 @@ test('metadata validation rejects a same-version or malformed package', () => {
   const body = Buffer.from('package');
   assert.equal(engine.parseMetadata({ statusCode: 200, body: feed('1.0.0', body) }), null);
   assert.throws(() => engine.parseMetadata({ statusCode: 200, body: Buffer.from(JSON.stringify({ version: '1.1.0', package: { url: 'http://bad', sha256: 'x', size: 1 } })) }), /invalid|HTTPS/);
+  assert.equal(validPackageFilename('Dim.Sum.Atlas-1.1.0-full.nupkg', '1.1.0'), true);
+  assert.equal(validPackageFilename('../x.nupkg', '1.1.0'), false);
+  assert.equal(validPackageFilename('Dim.Sum.Atlas-full.nupkg', '1.1.0'), false);
 });
 
 test('check and download validate identity, hash, size, retry, and ready state', async () => {
@@ -75,6 +78,10 @@ test('check and download validate identity, hash, size, retry, and ready state',
   assert.equal(ready.state, 'ready');
   assert.equal(fs.readFileSync(ready.package.packagePath).toString(), body.toString());
   assert.equal(fs.readFileSync(path.join(ready.stagedPath, 'RELEASES')).toString(), ready.package.releasesLine);
+  const [releaseSha1, releaseFilename, releaseSize] = ready.package.releasesLine.trim().split(/\s+/);
+  assert.equal(releaseSha1, ready.package.sha1);
+  assert.equal(releaseFilename, ready.package.filename);
+  assert.equal(Number(releaseSize), ready.package.size);
   assert.equal(fs.existsSync(path.join(root, 'last-valid-update.json')), true);
   assert.equal(transport.calls, 2);
   fs.rmSync(root, { recursive: true, force: true });
@@ -113,9 +120,9 @@ test('restart interlock never restarts over dirty or in-flight work', async () =
 test('production Squirrel seam invokes Update.exe with the validated feed directory', async () => {
   const calls = []; let exited = false;
   const child = { once(event, listener) { if (event === 'spawn') setImmediate(listener); return this; }, unref() { exited = true; } };
-  const runtime = createSquirrelRuntime({ updateExe: 'C:\\Installed\\Update.exe', spawnProcess: (...args) => { calls.push(args); return child; }, quit: () => { exited = true; } });
+  const runtime = createSquirrelRuntime({ updateExe: 'C:\\Installed\\Update.exe', fsModule: { existsSync: () => true }, spawnProcess: (...args) => { calls.push(args); return child; }, quit: () => { exited = true; } });
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-feed-'));
-  const packagePath = path.join(root, 'Atlas.nupkg'); const releasesLine = 'a'.repeat(40) + ' 7 Atlas.nupkg\n';
+  const packagePath = path.join(root, 'Atlas-1.1.0-full.nupkg'); const releasesLine = 'a'.repeat(40) + ' Atlas-1.1.0-full.nupkg 7\n';
   fs.writeFileSync(packagePath, 'package'); fs.writeFileSync(path.join(root, 'RELEASES'), releasesLine);
   await runtime.installPackage(root, { packagePath, releasesLine });
   assert.deepEqual(calls[0][0], 'C:\\Installed\\Update.exe');
