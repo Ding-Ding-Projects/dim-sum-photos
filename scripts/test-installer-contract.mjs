@@ -45,6 +45,11 @@ for (const script of ['download-dependencies.bat', 'build.bat', 'build-installer
 }
 assert.match(read('download-dependencies.bat'), /bootstrap-node\.ps1/);
 assert.match(read('scripts/bootstrap-node.ps1'), /node-runtime\.json/);
+assert.match(read('scripts/bootstrap-node.ps1'), /sha256\.ps1/);
+assert.match(read('scripts/bootstrap-portable-7z.ps1'), /sha256\.ps1/);
+assert.ok(fs.existsSync(path.join(root, 'scripts/test-sha256-fallback.ps1')));
+assert.match(read('scripts/sha256.ps1'), /ForceFallback/);
+assert.match(read('scripts/sha256.ps1'), /Assert-FileSha256/);
 assert.match(read('scripts/bootstrap-portable-7z.ps1'), /portable-7z\.json/);
 assert.match(read('scripts/bootstrap-portable-7z.ps1'), /cache SHA-256 mismatch/);
 assert.match(read('scripts/bootstrap-portable-7z.ps1'), /if \(Test-Path/);
