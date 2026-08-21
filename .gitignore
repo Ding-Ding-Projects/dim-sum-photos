@@ -1,6 +1,8 @@
 node_modules/
+.tools/
 apps/*/node_modules/
 apps/*/dist/
+apps/dim-sum-atlas/portable/
 apps/dim-sum-atlas/catalog.json
 release-*/
 *.7z

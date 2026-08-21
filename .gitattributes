@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Keep deterministic generated icon metadata stable under core.autocrlf=true.
+apps/dim-sum-atlas/build/icon-manifest.json text eol=lf
+scripts/ensure-icon.mjs text eol=lf
