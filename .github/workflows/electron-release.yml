@@ -18,13 +18,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.14.0
           cache: npm
           cache-dependency-path: apps/dim-sum-atlas/package-lock.json
-      - run: npm ci
-      - run: npm run validate:additions
-      - run: npm run validate:data
-      - name: Bundle the public catalog into the app
+      - name: Install declared dependencies
+        run: npm ci --ignore-scripts
+      - name: Enable Electron install script explicitly
+        run: npm rebuild electron --foreground-scripts
+      - name: Bundle public catalog
         shell: pwsh
         run: |
           Copy-Item '../../catalog/index.json' 'catalog.json' -Force
@@ -35,46 +36,54 @@ jobs:
             foreach ($dish in @($additions.dishes)) { if ($seen.Add($dish.id)) { $catalog.dishes += $dish } }
           }
           $catalog | ConvertTo-Json -Depth 20 | Set-Content 'catalog.json' -Encoding utf8
-      - name: Bundle portable 7-Zip
+      - name: Pin and verify portable 7-Zip
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force 'portable/7z' | Out-Null
-          Invoke-WebRequest -Uri 'https://www.7-zip.org/a/7zr.exe' -OutFile 'portable/7z/7z.exe'
-          if ((Get-Item 'portable/7z/7z.exe').Length -lt 100000) { throw 'The downloaded portable 7-Zip binary is unexpectedly small.' }
-      - name: Build Windows installer
+          $pin = Get-Content '../../scripts/portable-7z.json' -Raw | ConvertFrom-Json
+          Invoke-WebRequest -Uri $pin.url -OutFile 'portable/7z/7z.exe'
+          $hash = (Get-FileHash 'portable/7z/7z.exe' -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ((Get-Item 'portable/7z/7z.exe').Length -lt $pin.minimumBytes) { throw 'Portable 7-Zip is unexpectedly small.' }
+          if ($hash -ne $pin.sha256) { throw "Portable 7-Zip SHA-256 mismatch: $hash" }
+          Set-Content 'portable/7z/manifest.json' (@{url=$pin.url;sha256=$hash;verifiedAt=(Get-Date).ToUniversalTime().ToString('o')} | ConvertTo-Json)
+      - name: Build unsigned Squirrel.Windows installer
         shell: pwsh
         run: npm run build:installer
-      - name: Package portable Windows app
-        shell: pwsh
-        run: npx --no-install @electron/packager . "Dim Sum Atlas" --platform=win32 --arch=x64 --out=release --overwrite --asar
-      - name: Zip portable app
+      - name: Verify installer contract and hashes
         shell: pwsh
         run: |
-          7z a -tzip -mx=1 'dim-sum-atlas-win-x64.zip' './release/Dim Sum Atlas-win32-x64/*'
-          if (-not (Test-Path 'dim-sum-atlas-win-x64.zip')) { throw 'Portable ZIP was not produced.' }
+          npm run verify:installer
+          $setup = Get-ChildItem dist/squirrel-windows -Filter '*.exe' | Select-Object -First 1
+          if (-not $setup) { throw 'Setup.exe missing from Squirrel output.' }
+          $sig = Get-AuthenticodeSignature $setup.FullName
+          if ($sig.Status -ne 'NotSigned') { throw "Installer signing status is $($sig.Status), expected NotSigned." }
+          Get-FileHash dist/squirrel-windows/* -Algorithm SHA256 | ConvertTo-Json | Set-Content dist/squirrel-windows/hashes.json
       - name: Publish immutable release
         working-directory: ${{ github.workspace }}
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
+          $start = (Get-Date).ToUniversalTime()
           $tag = "desktop-$($env:GITHUB_RUN_NUMBER)-$($env:GITHUB_SHA.Substring(0,8))"
-          $catalog = Get-Content "catalog/index.json" -Raw | ConvertFrom-Json
-          $seen = [System.Collections.Generic.HashSet[string]]::new([string[]]$catalog.dishes.id)
-          Get-ChildItem "catalog/additions-*.json" | Sort-Object Name | ForEach-Object {
-            $additions = Get-Content $_.FullName -Raw | ConvertFrom-Json
-            foreach ($dish in @($additions.dishes)) { if ($seen.Add($dish.id)) { $catalog.dishes += $dish } }
-          }
-          $verified = @($catalog.dishes | Where-Object { $_.image.path })
-          $dish = $verified[($env:GITHUB_RUN_NUMBER - 1) % $verified.Count]
-          $photoName = Split-Path $dish.image.path -Leaf
-          $photo = "apps/dim-sum-atlas/$photoName"
-          $number = [int]([regex]::Match($dish.id, '\d+$').Value)
-          $part = if ($number -le 995) { 1 } else { [math]::Floor(($number - 996) / 990) + 2 }
-          $imageRelease = if ($part -eq 1) { 'catalog-v1' } else { "catalog-v1-part-{0:D3}" -f $part }
-          Invoke-WebRequest -Uri "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/$imageRelease/$photoName" -OutFile $photo
-          $codeName = "$($dish.name.en) · $($dish.name.zhHant)"
-          $assets = @("apps/dim-sum-atlas/dim-sum-atlas-win-x64.zip", $photo) + @(Get-ChildItem 'apps/dim-sum-atlas/dist/*.exe' | ForEach-Object { $_.FullName })
-          if ($assets.Count -lt 3) { throw 'The Windows installer was not produced.' }
-          gh release create $tag $assets --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes "Windows installer and portable build. Catalog code name: $codeName. Embedded photo asset: $photoName."
+          $assets = Get-ChildItem 'apps/dim-sum-atlas/dist/squirrel-windows' -File | Where-Object { $_.Extension -in '.exe','.nupkg' -or $_.Name -in 'RELEASES','hashes.json','installer-manifest.json' }
+          if (-not ($assets | Where-Object Extension -eq '.exe')) { throw 'No Setup.exe asset exists.' }
+          $hashLines = ($assets | ForEach-Object { "- $($_.Name): $((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())" }) -join "`n"
+          $end = (Get-Date).ToUniversalTime()
+          $duration = $end - $start
+          $notes = @"
+          Windows Squirrel.Windows installer, intentionally unsigned.
+
+          Target commit: $env:GITHUB_SHA
+          Workflow started: $($start.ToString('o'))
+          Workflow completed: $($end.ToString('o'))
+          Workflow duration: $($duration.ToString('hh\:mm\:ss'))
+          Packaging provenance: electron-builder 26.15.3, Squirrel.Windows, signing disabled; independent Authenticode status: NotSigned.
+          Portable 7-Zip provenance: pinned URL and SHA-256 are in portable/7z/manifest.json.
+
+          Asset SHA-256:
+          $hashLines
+          "@
+          $notes | Set-Content release-notes.md -Encoding utf8
+          gh release create $tag --target $env:GITHUB_SHA --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes-file release-notes.md ($assets.FullName)
           gh release edit $tag --repo "$env:GITHUB_REPOSITORY" --draft=false --latest

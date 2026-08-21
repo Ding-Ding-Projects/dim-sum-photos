@@ -6,6 +6,8 @@ The installed app is Windows-only, local-first, and caches approved release imag
 
 Non-Windows launches exit immediately. Network image retrieval is limited to the configured project release URL; unavailable images receive an accessible fallback state.
 
+Installer delivery is Squirrel.Windows-only. `build-installer.bat /s` is the silent reproducible path and produces `Setup.exe`, `RELEASES`, the full `.nupkg`, and supported delta packages. Signing is intentionally disabled, and the release workflow checks the generated setup with Authenticode before publishing it as `NotSigned`. Release notes include the immutable target SHA, measured workflow timestamps and duration, per-asset SHA-256 hashes, and the portable 7-Zip provenance manifest.
+
 ## Verification
 
 `node --check` passes for the main and renderer processes, `npm run validate:data` passes, and a real Electron Windows process remained alive during a five-second launch smoke test.

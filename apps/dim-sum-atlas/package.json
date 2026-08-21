@@ -1,14 +1,17 @@
 {
   "name": "dim-sum-atlas",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "A Material 3 Electron gallery for the bundled dim-sum catalog.",
+  "author": "Ding-Ding Projects",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "validate:data": "node data/validate.mjs",
     "validate:additions": "node ../../scripts/validate-catalog-additions.mjs",
-    "build:installer": "electron-builder --win nsis --x64"
+    "build:installer": "node ../../scripts/ensure-icon.mjs && electron-builder --win squirrel --x64",
+    "verify:installer": "node ../../scripts/verify-installer.mjs",
+    "test:installer-contract": "node ../../scripts/test-installer-contract.mjs"
   },
   "devDependencies": {
     "@electron/packager": "20.0.4",
@@ -20,8 +23,8 @@
     "productName": "Dim Sum Atlas",
     "asar": true,
     "files": ["src/**/*", "data/**/*", "catalog.json", "portable/**/*", "package.json"],
-    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
-    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true }
+    "win": { "target": [{ "target": "squirrel", "arch": ["x64"] }], "icon": "build/icon.ico", "forceCodeSigning": false, "signExecutable": false, "signAndEditExecutable": false },
+    "squirrelWindows": { "artifactName": "Dim-Sum-Atlas-${version}-win-x64.${ext}", "iconUrl": "https://raw.githubusercontent.com/Ding-Ding-Projects/dim-sum-photos/main/apps/dim-sum-atlas/build/icon.ico", "remoteReleases": "" }
   },
   "allowScripts": {
     "electron@37.10.3": true
