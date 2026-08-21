@@ -30,8 +30,12 @@ Updater warnings and failures are persisted locally under the `dim-sum-updater-h
 
 The service reports unavailable, up-to-date, cancelled, failed, and restart-blocked states without a fake success. The UI never downloads an update itself, accepts an arbitrary URL, or treats an unsigned installer as authenticated. The core process owns transport, hash validation, staging, rollback, and restart safety.
 
+The feed is HTTPS-only outside explicitly bounded local development. Metadata must identify the immutable release and expected asset hash before staging. A hash mismatch, malformed metadata, corrupt package, insufficient storage, cancellation, or interrupted download retains the installed version and reports the exact failure. Staging is atomic, rollback preserves the last usable installed version, and restart is always user-initiated after unsaved-work checks. Offline checks remain non-blocking and do not replace the last valid state with a guessed result.
+
+The Squirrel.Windows artifacts are intentionally unsigned and may trigger an unknown-publisher or SmartScreen warning. Transport security, immutable release metadata, package hashes, and rollback reduce delivery risk; they do not create or claim a code signature.
+
 ## Verification
 
-`node --check apps/dim-sum-atlas/src/updater-ui.js` validates the shipped UI module. Focused tests cover state normalization, byte progress bounds, exact version facts, English/Cantonese/bilingual copy, both funny extremes, and HTTPS release-note validation. Runtime evidence still requires the built Electron artifact with the core bridge wired.
+Recorded focused source evidence includes 24 updater-engine tests before the final core merge plus lifecycle/feed coverage, and 10 updater-UI tests. The installed pre-release artifact rendered the `2919`-record catalog and reported HTTP 404 honestly because `update.json` is not published yet. That proves the installed failure surface, not feed publication, download integrity, staging, restart-to-install, rollback, or an update-current result. Those remote and installed-update checks remain pending.
 
-Suggested articles: [Windows Electron companion](electron.md), [Bulk image export](bulk-export.md).
+Suggested articles: [Installer and updater proof](installer-update-proof.md), [Windows Electron companion](electron.md), [Bulk image export](bulk-export.md).
