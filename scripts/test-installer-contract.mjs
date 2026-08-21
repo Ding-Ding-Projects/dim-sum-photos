@@ -85,7 +85,8 @@ assert.match(read('build-installer.bat'), /generate-update-metadata\.mjs --candi
 assert.match(read('build-installer.bat'), /get-installer-signature\.ps1/);
 assert.match(read('build-installer.bat'), /NotSigned/);
 assert.match(read('build-installer.bat'), /if errorlevel 1 goto failure/);
-assert.match(read('build-installer.bat'), /set \/p "SIGNATURE=<%SIGNATURE_FILE%"/);
+assert.match(read('build-installer.bat'), /set \/p "SIGNATURE=" < "!SIGNATURE_FILE!"/);
+assert.doesNotMatch(read('build-installer.bat'), /set \/p "SIGNATURE=<%SIGNATURE_FILE%"/);
 assert.match(read('scripts/get-installer-signature.ps1'), /Import-Module -Name \$securityModule/);
 assert.match(read('scripts/get-installer-signature.ps1'), /Microsoft\.PowerShell\.Security\\Get-AuthenticodeSignature/);
 assert.match(read('build-installer.bat'), /assert-installer-fresh\.ps1/);
