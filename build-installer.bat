@@ -13,7 +13,7 @@ call npm run assemble:catalog
 if errorlevel 1 goto failure
 call npm run build:installer
 set "RC=!ERRORLEVEL!"
-if "!RC!"=="0" for /f "delims=" %%S in ('powershell.exe -NoProfile -Command "(Get-AuthenticodeSignature -LiteralPath (Get-ChildItem -LiteralPath ''dist\squirrel-windows'' -Filter ''Dim-Sum-Atlas-*.exe'' | Select-Object -First 1).FullName).Status"') do set "SIGNATURE=%%S"
+if "!RC!"=="0" for /f "delims=" %%S in ('powershell.exe -NoProfile -ExecutionPolicy Bypass -File ..\..\scripts\get-installer-signature.ps1 -Dist "!CD!\dist\squirrel-windows"') do set "SIGNATURE=%%S"
 if "!RC!"=="0" if /I not "!SIGNATURE!"=="NotSigned" set "RC=1"
 if "!RC!"=="0" node ..\..\scripts\verify-installer.mjs --signature-status=!SIGNATURE!
 set "RC=!ERRORLEVEL!"

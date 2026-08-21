@@ -1,6 +1,6 @@
-param([Parameter(Mandatory)][string]$Sentinel, [string]$Dist = (Join-Path $PSScriptRoot '..\apps\dim-sum-atlas\dist\squirrel-windows'))
+param([Parameter(Mandatory)][string]$Sentinel, [string]$Dist)
 $ErrorActionPreference = 'Stop'
-$start = (Get-Item -LiteralPath $Sentinel).LastWriteTimeUtc
-$files = @((Get-ChildItem -LiteralPath $Dist -Filter 'Dim-Sum-Atlas-*.exe' | Select-Object -First 1), (Get-Item -LiteralPath (Join-Path $Dist 'RELEASES')), (Get-ChildItem -LiteralPath $Dist -Filter '*-full.nupkg' | Select-Object -First 1), (Get-Item -LiteralPath (Join-Path $Dist 'installer-manifest.json')))
+. (Join-Path $PSScriptRoot 'path-containment.ps1'); $repo=Join-Path $PSScriptRoot '..'; $temp=[IO.Path]::GetTempPath(); if(-not $Dist){$Dist=Join-Path $repo 'apps\dim-sum-atlas\dist\squirrel-windows'}; $resolvedDist=Resolve-ContainedPath -Candidate (Resolve-Path -LiteralPath $Dist).Path -Roots @($repo,$temp); $resolvedSentinel=Resolve-ContainedPath -Candidate (Resolve-Path -LiteralPath $Sentinel).Path -Roots @($repo,$temp); if([IO.Path]::GetFileName($resolvedDist) -ne 'squirrel-windows'){throw 'Installer dist must be the exact squirrel-windows directory.'}; $start = (Get-Item -LiteralPath $resolvedSentinel).LastWriteTimeUtc
+$files = @((Get-ChildItem -LiteralPath $resolvedDist -Filter 'Dim-Sum-Atlas-*.exe' | Select-Object -First 1), (Get-Item -LiteralPath (Join-Path $resolvedDist 'RELEASES')), (Get-ChildItem -LiteralPath $resolvedDist -Filter '*-full.nupkg' | Select-Object -First 1), (Get-Item -LiteralPath (Join-Path $resolvedDist 'installer-manifest.json')))
 $stale = @($files | Where-Object { $_.LastWriteTimeUtc -le $start }); if ($files.Count -ne 4 -or $stale.Count -gt 0) { throw 'Squirrel output is missing or not newer than the build sentinel.' }
 Write-Output 'PASS fresh Squirrel output'
