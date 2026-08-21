@@ -12,7 +12,7 @@ if not defined SEVEN_Z (echo Unable to bootstrap pinned portable 7-Zip.& exit /b
 where node >nul 2>nul || (echo Pinned Node.js executable is unavailable.& exit /b 1)
 where npm >nul 2>nul || (echo Pinned npm executable is unavailable.& exit /b 1)
 pushd "%~dp0apps\dim-sum-atlas"
-npm ci --ignore-scripts
+call npm ci --ignore-scripts
 set "RC=!ERRORLEVEL!"
 popd
 if not "!RC!"=="0" exit /b !RC!

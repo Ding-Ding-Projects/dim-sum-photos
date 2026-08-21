@@ -4,9 +4,9 @@ for %%A in (%*) do if /I "%%~A"=="/s" set "SILENT=1"
 for %%A in (%*) do if /I "%%~A"=="--silent" set "SILENT=1"
 call "%~dp0download-dependencies.bat" %* || exit /b !ERRORLEVEL!
 pushd "%~dp0apps\dim-sum-atlas"
-npm run assemble:catalog
+call npm run assemble:catalog
 if errorlevel 1 exit /b !ERRORLEVEL!
-npm run build:installer
+call npm run build:installer
 set "RC=!ERRORLEVEL!"
 if "!RC!"=="0" set "APP=!CD!\dist\win-unpacked\Dim Sum Atlas.exe"
 popd
