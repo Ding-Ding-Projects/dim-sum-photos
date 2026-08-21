@@ -38,6 +38,6 @@ The Squirrel.Windows artifacts are intentionally unsigned and may trigger an unk
 
 ## Verification
 
-Recorded focused source evidence includes 24 updater-engine tests before the final core merge plus lifecycle/feed coverage, and 10 updater-UI tests. The installed pre-release artifact rendered the `2919`-record catalog and reported HTTP 404 honestly because `update.json` is not published yet. That proves the installed failure surface, not feed publication, download integrity, staging, restart-to-install, rollback, or an update-current result. Those remote and installed-update checks remain pending.
+Recorded focused evidence includes 34 updater tests, red-then-green producer/consumer metadata and restart-order contracts, and a real installed update from `0.1.6` to published `0.1.7`. The installed artifact rendered the available, downloading, ready-to-restart, postponed, and current states; Squirrel completed `--update` before a separate `--processStart`, which automatically launched `app-0.1.7` with all `2919` catalog records.
 
 Suggested articles: [Installer and updater proof](installer-update-proof.md), [Windows Electron companion](electron.md), [Bulk image export](bulk-export.md).
