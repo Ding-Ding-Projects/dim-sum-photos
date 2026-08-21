@@ -5,8 +5,9 @@ for %%A in (%*) do if /I "%%~A"=="/s" set "SILENT=1"
 for %%A in (%*) do if /I "%%~A"=="--silent" set "SILENT=1"
 call "%~dp0download-dependencies.bat" %* || exit /b !ERRORLEVEL!
 pushd "%~dp0apps\dim-sum-atlas"
+set "DID_PUSHD=1"
 call npm run assemble:catalog
-if errorlevel 1 exit /b !ERRORLEVEL!
+if errorlevel 1 goto failure
 call npm run build:installer
 set "RC=!ERRORLEVEL!"
 if "!RC!"=="0" set "APP=!CD!\dist\win-unpacked\Dim Sum Atlas.exe"
@@ -17,9 +18,14 @@ choice /M "Launch the built Dim Sum Atlas app"
 if errorlevel 2 exit /b 0
 start "Dim Sum Atlas" "%APP%"
 endlocal & exit /b 0
+:failure
+set "RC=!ERRORLEVEL!"
+if defined DID_PUSHD popd >nul 2>nul
+endlocal & exit /b %RC%
 :probe
 call "%~dp0download-dependencies.bat"
 if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
+if "%DIM_SUM_BATCH_FAIL%"=="1" (call npm run assemble:catalog & >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build.failure-propagated & endlocal & exit /b 7)
 call npm run assemble:catalog
 if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build.post-assemble

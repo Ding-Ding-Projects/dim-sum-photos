@@ -7,6 +7,7 @@ call "%~dp0download-dependencies.bat" %* || goto failure
 set "BUILD_SENTINEL=%TEMP%\dim-sum-installer-%RANDOM%.sentinel"
 powershell.exe -NoProfile -Command "Set-Content -LiteralPath '%BUILD_SENTINEL%' -Value 'build-start'"
 pushd "%~dp0apps\dim-sum-atlas"
+set "DID_PUSHD=1"
 node ..\..\scripts\clean-installer-output.mjs
 call npm run assemble:catalog
 if errorlevel 1 goto failure
@@ -41,5 +42,5 @@ set "RC=!ERRORLEVEL!"
 :cleanup
 if defined BUILD_SENTINEL del /q "%BUILD_SENTINEL%" >nul 2>nul
 if not defined RC set "RC=1"
-popd >nul 2>nul
+if defined DID_PUSHD popd >nul 2>nul
 endlocal & exit /b %RC%
