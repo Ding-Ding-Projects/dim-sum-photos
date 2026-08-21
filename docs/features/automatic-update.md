@@ -32,6 +32,8 @@ The service reports unavailable, up-to-date, cancelled, failed, and restart-bloc
 
 The feed is HTTPS-only outside explicitly bounded local development. Metadata must identify the immutable release and expected asset hash before staging. A hash mismatch, malformed metadata, corrupt package, insufficient storage, cancellation, or interrupted download retains the installed version and reports the exact failure. Staging is atomic, rollback preserves the last usable installed version, and restart is always user-initiated after unsaved-work checks. Offline checks remain non-blocking and do not replace the last valid state with a guessed result.
 
+The stable release publishes this metadata under the exact asset name `update.json`, matching the default `releases/latest/download/update.json` endpoint used by installed copies. The release contract fails when the producer and consumer filenames diverge.
+
 The Squirrel.Windows artifacts are intentionally unsigned and may trigger an unknown-publisher or SmartScreen warning. Transport security, immutable release metadata, package hashes, and rollback reduce delivery risk; they do not create or claim a code signature.
 
 ## Verification

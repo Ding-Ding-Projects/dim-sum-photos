@@ -18,7 +18,7 @@ export function generateMetadata({ root, dist, args }) {
   const bytes = fs.statSync(path.join(dist, nupkg)).size;
   const sha256 = crypto.createHash('sha256').update(fs.readFileSync(path.join(dist, nupkg))).digest('hex');
   const metadata = { schema: 'dim-sum-atlas.update.v1', channel: 'stable', appVersion: packageJson.version, package: { filename: nupkg, bytes, sha256 }, release: { published: !candidate, tag, targetCommit: commit, fullNupkgUrl: `https://github.com/${repo}/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(nupkg)}`, releaseNotesUrl: `https://github.com/${repo}/releases/tag/${encodeURIComponent(tag)}` } };
-  const output = path.join(dist, candidate ? 'update-metadata.candidate.json' : 'update-metadata.json');
+  const output = path.join(dist, candidate ? 'update-metadata.candidate.json' : 'update.json');
   fs.writeFileSync(output, JSON.stringify(metadata, null, 2) + '\n');
   return { output, metadata };
 }

@@ -81,7 +81,7 @@ jobs:
           $photoHash = (Get-FileHash $photo -Algorithm SHA256).Hash.ToLowerInvariant()
           $assets += Get-Item $photo
           node 'scripts/generate-update-metadata.mjs' "--tag=$tag" "--commit=$env:GITHUB_SHA" "--repo=$env:GITHUB_REPOSITORY"
-          $metadata = Get-Item 'apps/dim-sum-atlas/dist/squirrel-windows/update-metadata.json'
+          $metadata = Get-Item 'apps/dim-sum-atlas/dist/squirrel-windows/update.json'
           $assets += $metadata
           $lineCount = Get-Content 'line-count.md' -Raw
           $notes = "Windows Squirrel.Windows installer, intentionally unsigned.`n`nTarget commit: $env:GITHUB_SHA`nCode name: $codeName`nCatalog record: $($dish.id)`nPhoto provenance: catalog release $imageRelease, asset $photoName, SHA-256 $photoHash.`nPackaging provenance: electron-builder 26.15.3, Squirrel.Windows, signing disabled; independent Authenticode status: NotSigned.`n`n## Project line count`n`n$lineCount`n"

@@ -1,6 +1,6 @@
 {
   "name": "dim-sum-atlas",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "A Material 3 Electron gallery for the bundled dim-sum catalog.",
   "author": "Ding-Ding Projects",
@@ -23,9 +23,32 @@
     "appId": "com.dingdingprojects.dimsumatlas",
     "productName": "Dim Sum Atlas",
     "asar": true,
-    "files": ["src/**/*", "data/**/*", "catalog.json", "portable/**/*", "package.json"],
-    "win": { "target": [{ "target": "squirrel", "arch": ["x64"] }], "icon": "build/icon.ico", "forceCodeSigning": false, "signExecutable": false, "signAndEditExecutable": false },
-    "squirrelWindows": { "artifactName": "Dim-Sum-Atlas-${version}-win-x64.${ext}", "iconUrl": "https://raw.githubusercontent.com/Ding-Ding-Projects/dim-sum-photos/main/apps/dim-sum-atlas/build/icon.ico", "remoteReleases": "" }
+    "files": [
+      "src/**/*",
+      "data/**/*",
+      "catalog.json",
+      "portable/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "squirrel",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "forceCodeSigning": false,
+      "signExecutable": false,
+      "signAndEditExecutable": false
+    },
+    "squirrelWindows": {
+      "artifactName": "Dim-Sum-Atlas-${version}-win-x64.${ext}",
+      "iconUrl": "https://raw.githubusercontent.com/Ding-Ding-Projects/dim-sum-photos/main/apps/dim-sum-atlas/build/icon.ico",
+      "remoteReleases": ""
+    }
   },
   "allowScripts": {
     "electron@37.10.3": true
