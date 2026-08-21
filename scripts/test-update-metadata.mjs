@@ -1,0 +1,10 @@
+import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import assert from 'node:assert/strict'; import { generateMetadata } from './generate-update-metadata.mjs';
+const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-metadata-')); const app = path.join(fixture, 'apps', 'dim-sum-atlas'); const dist = path.join(app, 'dist'); fs.mkdirSync(dist, { recursive: true }); fs.writeFileSync(path.join(app, 'package.json'), JSON.stringify({ version: '9.8.7' })); fs.writeFileSync(path.join(dist, 'dim-sum-atlas-9.8.7-full.nupkg'), 'full'); fs.writeFileSync(path.join(dist, 'dim-sum-atlas-9.8.7-delta.nupkg'), 'delta');
+try {
+  const published = generateMetadata({ root: fixture, dist, args: { tag: 'desktop-99-deadbeef', commit: 'deadbeef', repo: 'owner/repo' } }).metadata;
+  assert.equal(published.appVersion, '9.8.7'); assert.equal(published.package.filename, 'dim-sum-atlas-9.8.7-full.nupkg'); assert.equal(published.release.published, true); assert.match(published.release.fullNupkgUrl, /desktop-99-deadbeef\/dim-sum-atlas-9\.8\.7-full\.nupkg/);
+  assert.throws(() => generateMetadata({ root: fixture, dist, args: { tag: 'latest', commit: 'deadbeef', repo: 'owner/repo' } }), /immutable tag/);
+  fs.rmSync(path.join(dist, 'dim-sum-atlas-9.8.7-full.nupkg')); assert.throws(() => generateMetadata({ root: fixture, dist, args: { candidate: 'true' } }), /exactly one full nupkg/); fs.writeFileSync(path.join(dist, 'dim-sum-atlas-9.8.7-full.nupkg'), 'full'); fs.writeFileSync(path.join(dist, 'another-full.nupkg'), 'full'); assert.throws(() => generateMetadata({ root: fixture, dist, args: { candidate: 'true' } }), /exactly one full nupkg/); fs.rmSync(path.join(dist, 'another-full.nupkg'));
+  const candidate = generateMetadata({ root: fixture, dist, args: { candidate: 'true' } }).metadata; assert.equal(candidate.release.published, false); assert.equal(candidate.release.tag, 'UNPUBLISHED-CANDIDATE');
+  console.log('PASS update metadata fixture: full selection, cardinality, immutable args, package version, published URL, candidate semantics');
+} finally { fs.rmSync(fixture, { recursive: true, force: true }); }
