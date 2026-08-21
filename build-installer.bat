@@ -32,15 +32,17 @@ set "DID_PUSHD=1"
 call "%~dp0download-dependencies.bat"
 if errorlevel 1 goto probe_failure
 call npm run assemble:catalog
-if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
+if errorlevel 1 goto probe_failure
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.post-assemble
 call npm run build:installer
-if errorlevel 1 endlocal & exit /b !ERRORLEVEL!
+if errorlevel 1 goto probe_failure
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.post-build
 >>"%DIM_SUM_BATCH_PROBE_LOG%" echo build-installer.freshness-verifier
-endlocal & exit /b 0
+set "RC=0"
+goto probe_cleanup
 :probe_failure
 set "RC=!ERRORLEVEL!"
+:probe_cleanup
 if defined DID_PUSHD (popd >nul 2>nul & set "DID_PUSHD=")
 endlocal & exit /b %RC%
 :failure
