@@ -17,7 +17,7 @@ set "SIGNATURE="
 set "SIGNATURE_FILE=%TEMP%\dim-sum-installer-signature-%RANDOM%.txt"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ..\..\scripts\get-installer-signature.ps1 -Dist "!CD!\dist\squirrel-windows" >"!SIGNATURE_FILE!"
 if errorlevel 1 goto failure
-set /p "SIGNATURE=<%SIGNATURE_FILE%"
+set /p "SIGNATURE=" < "!SIGNATURE_FILE!"
 if not defined SIGNATURE (set "RC=1" & goto failure)
 if /I not "!SIGNATURE!"=="NotSigned" (set "RC=1" & goto failure)
 node ..\..\scripts\verify-installer.mjs --signature-status=!SIGNATURE!
