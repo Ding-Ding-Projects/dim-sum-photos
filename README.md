@@ -22,4 +22,12 @@ The desktop release is packaged only as an intentionally unsigned Squirrel.Windo
 
 For a runnable checkout build, use `build.bat /s`. Both root scripts invoke the repository's dependency bootstrap path and are the supported entry points; release packaging must not bypass them. The current `0.1.1` candidate is not published yet. Local evidence proves package creation, a silent headless installation, and an installed pre-release launch, but it does not prove a published update feed or remote release.
 
+## Line count and human-time estimate
+
+Run `node scripts/count-lines.mjs` to reproduce the Markdown line-count table for the checked-out commit, or `node scripts/count-lines.mjs --json` for the machine-readable record. The committed counter reports project source, tests, styles/markup, generated data, catch-all project files, and explicitly excluded content with total and non-blank lines. It also attributes surviving project lines with `git blame`; attribution is reported as unavailable when Git cannot prove it, never guessed.
+
+The release workflow runs that command only after verifying the checkout is exactly `GITHUB_SHA`, then embeds its output in the release notes. Release notes are the record for a published count; this README intentionally does not hand-copy an unpublished total.
+
+The human implementation-time figure is an estimate derived from the same published release count, not a measured duration: `hand-written non-blank project lines ÷ 15-30 reviewed lines per developer-hour`, with additional project-specific complexity multipliers stated beside any published estimate. Vendored or third-party files, dependency directories, lockfiles, build output, generated catalog data, and bulk image archives are excluded from the hand-written input. This produces a range rather than false single-number precision, and it must be refreshed from the workflow-produced count when a release is published.
+
 Documentation: [feature index](docs/README.md), [installer and updater proof inventory](docs/features/installer-update-proof.md), [automatic updates](docs/features/automatic-update.md).
