@@ -194,3 +194,49 @@ test('tampered or stale persisted update is purged and does not block the curren
   assert.equal(stale.snapshot().state, 'idle');
   fs.rmSync(root, { recursive: true, force: true });
 });
+
+test('streaming transport handles large body without a response Buffer', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-stream-'));
+  const body = Buffer.alloc(2 * 1024 * 1024, 7);
+  const metadata = feed('1.2.0', body);
+  const transport = {
+    streaming: true,
+    async request(url, options = {}) {
+      if (url.includes('/feed')) return { statusCode: 200, headers: {}, body: metadata };
+      fs.writeFileSync(options.streamTo, Buffer.alloc(0), { flag: 'wx' });
+      for (let offset = 0; offset < body.length; offset += 64 * 1024) {
+        const chunk = body.subarray(offset, Math.min(body.length, offset + 64 * 1024));
+        fs.appendFileSync(options.streamTo, chunk); options.onChunk(chunk);
+      }
+      return { statusCode: 200, headers: {} };
+    }
+  };
+  const progress = [];
+  const engine = new UpdaterEngine({ currentVersion: '1.1.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport, maxRetries: 0 });
+  engine.onState((state) => { if (state.progress) progress.push(state.progress.received); });
+  await engine.check(); const ready = await engine.download();
+  assert.equal(fs.statSync(ready.package.packagePath).size, body.length);
+  assert.equal(progress.some((value) => value > 0 && value < body.length), true);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('recovery rejects a staged feed that escapes storage through a symlink', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-link-'));
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-outside-'));
+  const body = Buffer.from('link package');
+  const first = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport: transportFor(feed('1.1.0', body), body) });
+  await first.check(); const ready = await first.download();
+  const feedDirectory = ready.stagedPath;
+  fs.rmSync(feedDirectory, { recursive: true, force: true });
+  try {
+    fs.symlinkSync(outside, feedDirectory, process.platform === 'win32' ? 'junction' : 'dir');
+    const recovered = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root });
+    assert.equal(recovered.snapshot().state, 'idle');
+    assert.equal(fs.existsSync(path.join(root, 'last-valid-update.json')), false);
+  } catch (error) {
+    if (!['EPERM', 'EEXIST', 'UNKNOWN'].includes(error.code)) throw error;
+  } finally {
+    try { fs.rmSync(feedDirectory, { recursive: true, force: true }); } catch (_) {}
+    fs.rmSync(outside, { recursive: true, force: true }); fs.rmSync(root, { recursive: true, force: true });
+  }
+});

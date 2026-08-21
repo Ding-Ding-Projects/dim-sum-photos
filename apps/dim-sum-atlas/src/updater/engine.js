@@ -41,9 +41,18 @@ function safeState(state) {
 
 function createHttpsTransport() {
   return {
+    streaming: true,
     request(url, options = {}) {
       return new Promise((resolve, reject) => {
         const request = https.get(url, { headers: { 'User-Agent': 'Dim-Sum-Atlas-Updater/1', Accept: 'application/json', ...options.headers } }, (response) => {
+          if (options.streamTo) {
+            const file = fs.createWriteStream(options.streamTo, { flags: 'wx' });
+            file.on('error', reject);
+            response.on('data', (chunk) => { if (typeof options.onChunk === 'function') options.onChunk(chunk); });
+            response.pipe(file);
+            file.on('finish', () => file.close(() => resolve({ statusCode: response.statusCode, headers: response.headers })));
+            return;
+          }
           const chunks = []; let bytes = 0;
           response.on('data', (chunk) => { bytes += chunk.length; chunks.push(chunk); if (typeof options.onChunk === 'function') options.onChunk(chunk); });
           response.on('end', () => resolve({ statusCode: response.statusCode, headers: response.headers, body: Buffer.concat(chunks) }));
@@ -105,8 +114,17 @@ class UpdaterEngine {
 
   _contained(target) {
     if (!this.storageRoot || !target || !this.path.isAbsolute(target)) return false;
-    const root = this.path.resolve(this.storageRoot) + this.path.sep;
-    return this.path.resolve(target).startsWith(root);
+    const rootPath = this.path.resolve(this.storageRoot);
+    const resolved = this.path.resolve(target);
+    if (!(resolved === rootPath || resolved.startsWith(rootPath + this.path.sep))) return false;
+    let current = rootPath;
+    const remainder = resolved.slice(rootPath.length).split(/[\\/]+/).filter(Boolean);
+    for (const segment of remainder) {
+      current = this.path.join(current, segment);
+      try { if (this.fs.lstatSync(current).isSymbolicLink()) return false; } catch (_) { /* final path may not exist yet */ }
+    }
+    try { if (this.fs.lstatSync(rootPath).isSymbolicLink()) return false; } catch (_) { return false; }
+    return true;
   }
 
   _loadPersistedUpdate() {
@@ -213,35 +231,39 @@ class UpdaterEngine {
     for (let attempt = 0; attempt <= this.maxRetries; attempt += 1) {
       try {
         received = 0;
+        const sha256 = crypto.createHash('sha256');
+        const sha1 = crypto.createHash('sha1');
+        let callbackSeen = false;
+        const onChunk = (chunk) => { callbackSeen = true; sha256.update(chunk); sha1.update(chunk); received += chunk.length; this.emit({ progress: { received, total: pkg.size, fraction: Math.min(1, received / pkg.size) } }); };
         const response = await this._requestFollowingRedirects(pkg.url, 0, {
           signal: controller.signal,
-          onChunk: (chunk) => {
-            received += chunk.length;
-            this.emit({ progress: { received, total: pkg.size, fraction: Math.min(1, received / pkg.size) } });
-          }
+          onChunk,
+          ...(this.transport.streaming ? { streamTo: temp } : {})
         });
         if (response.statusCode !== 200) throw new Error(`Update package returned HTTP ${response.statusCode}.`);
-        const body = Buffer.isBuffer(response.body) ? response.body : Buffer.from(response.body || '');
-        if (received === 0) {
-          received = body.length;
-          this.emit({ progress: { received, total: pkg.size, fraction: Math.min(1, received / pkg.size) } });
+        if (response.bodyStream) {
+          for await (const chunk of response.bodyStream) { onChunk(chunk); this.fs.appendFileSync(temp, chunk); }
+        } else if (Buffer.isBuffer(response.body) && !callbackSeen) {
+          this.fs.writeFileSync(temp, response.body, { flag: 'wx' });
+          onChunk(response.body);
+        } else if (Buffer.isBuffer(response.body) && callbackSeen && !this.transport.streaming) {
+          this.fs.writeFileSync(temp, response.body, { flag: 'wx' });
         }
-        if (body.length !== pkg.size) throw new Error('Update package size does not match metadata.');
-        const hash = crypto.createHash('sha256').update(body).digest('hex');
+        if (received !== pkg.size) throw new Error('Update package size does not match metadata.');
+        const hash = sha256.digest('hex');
         if (hash !== pkg.sha256) throw new Error('Update package hash does not match metadata.');
         if (generation !== this.generation) throw new Error('Update download was superseded.');
-        const sha1 = crypto.createHash('sha1').update(body).digest('hex');
-        const releasesLine = `${sha1} ${pkg.filename} ${pkg.size}\n`;
+        const sha1Digest = sha1.digest('hex');
+        const releasesLine = `${sha1Digest} ${pkg.filename} ${pkg.size}\n`;
         this.fs.mkdirSync(feedDirectory, { recursive: true });
-        this.fs.writeFileSync(temp, body, { flag: 'wx' });
         this.fs.renameSync(temp, packagePath);
         const feedReleaseTemp = this.path.join(feedDirectory, `.RELEASES-${process.pid}.tmp`);
         this.fs.copyFileSync(packagePath, this.path.join(feedDirectory, pkg.filename));
         this.fs.writeFileSync(feedReleaseTemp, releasesLine, 'utf8');
         this.fs.renameSync(feedReleaseTemp, this.path.join(feedDirectory, 'RELEASES'));
-        this._persist({ version: this.state.availableVersion, path: feedDirectory, packagePath: this.path.join(feedDirectory, pkg.filename), sha256: hash, sha1, size: pkg.size, releasesLine });
+        this._persist({ version: this.state.availableVersion, path: feedDirectory, packagePath: this.path.join(feedDirectory, pkg.filename), sha256: hash, sha1: sha1Digest, size: pkg.size, releasesLine });
         this.downloadAbort = null;
-        this.emit({ state: 'ready', stagedPath: feedDirectory, package: { ...pkg, sha256: hash, sha1, feedDirectory, packagePath: this.path.join(feedDirectory, pkg.filename), releasesLine }, progress: { received: pkg.size, total: pkg.size, fraction: 1 } });
+        this.emit({ state: 'ready', stagedPath: feedDirectory, package: { ...pkg, sha256: hash, sha1: sha1Digest, feedDirectory, packagePath: this.path.join(feedDirectory, pkg.filename), releasesLine }, progress: { received: pkg.size, total: pkg.size, fraction: 1 } });
         return this.snapshot();
       } catch (error) { lastError = error; if (this.fs.existsSync(temp)) this.fs.rmSync(temp, { force: true }); if (error.name === 'AbortError' || controller.signal.aborted) break; if (attempt < this.maxRetries) continue; }
     }
