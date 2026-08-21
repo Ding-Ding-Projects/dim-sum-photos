@@ -140,15 +140,17 @@ test('restart interlock never restarts over dirty or in-flight work', async () =
 
 test('production Squirrel seam invokes Update.exe with the validated feed directory', async () => {
   const calls = []; let exited = false;
-  const child = { once(event, listener) { if (event === 'spawn') setImmediate(listener); return this; }, unref() { exited = true; } };
-  const runtime = createSquirrelRuntime({ updateExe: 'C:\\Installed\\Update.exe', processStart: 'Dim Sum Atlas.exe', fsModule: { existsSync: () => true }, spawnProcess: (...args) => { calls.push(args); return child; }, quit: () => { exited = true; } });
+  const spawnProcess = (...args) => { calls.push(args); const call = calls.length; return { once(event, listener) { if (call === 1 && event === 'close') setImmediate(() => listener(0)); if (call === 2 && event === 'spawn') setImmediate(listener); return this; }, unref() { exited = true; } }; };
+  const runtime = createSquirrelRuntime({ updateExe: 'C:\\Installed\\Update.exe', processStart: 'Dim Sum Atlas.exe', fsModule: { existsSync: () => true }, spawnProcess, quit: () => { exited = true; } });
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-feed-'));
   const packagePath = path.join(root, 'Atlas-1.1.0-full.nupkg'); const releasesLine = 'a'.repeat(40) + ' Atlas-1.1.0-full.nupkg 7\n';
   fs.writeFileSync(packagePath, 'package'); fs.writeFileSync(path.join(root, 'RELEASES'), releasesLine);
   await runtime.installPackage(root, { packagePath, releasesLine });
   assert.deepEqual(calls[0][0], 'C:\\Installed\\Update.exe');
-  assert.deepEqual(calls[0][1], ['--update', root, '--processStart', 'Dim Sum Atlas.exe']);
+  assert.deepEqual(calls[0][1], ['--update', root]);
   assert.equal(calls[0][2].shell, false);
+  assert.deepEqual(calls[1][1], ['--processStart', 'Dim Sum Atlas.exe']);
+  assert.equal(calls[1][2].shell, false);
   assert.equal(exited, true);
   fs.rmSync(root, { recursive: true, force: true });
 });
