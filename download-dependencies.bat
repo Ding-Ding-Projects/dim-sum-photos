@@ -7,6 +7,8 @@ if /I "%SILENT%"=="1" set "SILENT=1"
 for /f "usebackq delims=" %%N in (`powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\bootstrap-node.ps1"`) do set "NODE_HOME=%%N"
 if not defined NODE_HOME (echo Unable to bootstrap pinned Node.js 22.14.0.& exit /b 1)
 set "PATH=!NODE_HOME!;!PATH!"
+for /f "usebackq delims=" %%Z in (`powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\bootstrap-portable-7z.ps1"`) do set "SEVEN_Z=%%Z"
+if not defined SEVEN_Z (echo Unable to bootstrap pinned portable 7-Zip.& exit /b 1)
 where node >nul 2>nul || (echo Pinned Node.js executable is unavailable.& exit /b 1)
 where npm >nul 2>nul || (echo Pinned npm executable is unavailable.& exit /b 1)
 pushd "%~dp0apps\dim-sum-atlas"

@@ -15,16 +15,16 @@ jobs:
       run:
         working-directory: apps/dim-sum-atlas
     steps:
+      - name: Record workflow start
+        id: timing
+        shell: pwsh
+        run: "\"workflow_start=$((Get-Date).ToUniversalTime().ToString('o'))\" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8"
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22.14.0
           cache: npm
           cache-dependency-path: apps/dim-sum-atlas/package-lock.json
-      - name: Record workflow start
-        id: timing
-        shell: pwsh
-        run: "\"workflow_start=$((Get-Date).ToUniversalTime().ToString('o'))\" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8"
       - name: Install declared dependencies
         run: npm ci --ignore-scripts
       - name: Enable Electron install script explicitly
@@ -42,25 +42,18 @@ jobs:
           $catalog | ConvertTo-Json -Depth 20 | Set-Content 'catalog.json' -Encoding utf8
       - name: Pin and verify portable 7-Zip
         shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force 'portable/7z' | Out-Null
-          $pin = Get-Content '../../scripts/portable-7z.json' -Raw | ConvertFrom-Json
-          Invoke-WebRequest -Uri $pin.url -OutFile 'portable/7z/7z.exe'
-          $hash = (Get-FileHash 'portable/7z/7z.exe' -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ((Get-Item 'portable/7z/7z.exe').Length -lt $pin.minimumBytes) { throw 'Portable 7-Zip is unexpectedly small.' }
-          if ($hash -ne $pin.sha256) { throw "Portable 7-Zip SHA-256 mismatch: $hash" }
-          Set-Content 'portable/7z/manifest.json' (@{url=$pin.url;sha256=$hash;verifiedAt=(Get-Date).ToUniversalTime().ToString('o')} | ConvertTo-Json)
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File '../../scripts/bootstrap-portable-7z.ps1'
       - name: Build unsigned Squirrel.Windows installer
         shell: pwsh
         run: npm run build:installer
       - name: Verify installer contract and hashes
         shell: pwsh
         run: |
-          npm run verify:installer
           $setup = Get-ChildItem dist/squirrel-windows -Filter '*.exe' | Select-Object -First 1
           if (-not $setup) { throw 'Setup.exe missing from Squirrel output.' }
           $sig = Get-AuthenticodeSignature $setup.FullName
           if ($sig.Status -ne 'NotSigned') { throw "Installer signing status is $($sig.Status), expected NotSigned." }
+          node ../../scripts/verify-installer.mjs "--signature-status=$($sig.Status)"
           Get-FileHash dist/squirrel-windows/* -Algorithm SHA256 | ConvertTo-Json | Set-Content dist/squirrel-windows/hashes.json
       - name: Publish immutable release
         working-directory: ${{ github.workspace }}
@@ -88,11 +81,10 @@ jobs:
           $photoHash = (Get-FileHash $photo -Algorithm SHA256).Hash.ToLowerInvariant()
           $assets += Get-Item $photo
           $notes = "Windows Squirrel.Windows installer, intentionally unsigned.`n`nTarget commit: $env:GITHUB_SHA`nCode name: $codeName`nCatalog record: $($dish.id)`nPhoto provenance: catalog release $imageRelease, asset $photoName, SHA-256 $photoHash.`nPackaging provenance: electron-builder 26.15.3, Squirrel.Windows, signing disabled; independent Authenticode status: NotSigned.`n"
-          gh release create $tag --target $env:GITHUB_SHA --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --notes $notes ($assets.FullName)
+          gh release create $tag --target $env:GITHUB_SHA --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --draft --notes $notes ($assets.FullName)
           $end = (Get-Date).ToUniversalTime()
           $duration = $end - $start
           $hashLines = ($assets | ForEach-Object { "- $($_.Name): $((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())" }) -join "`n"
           $notes = "$notes`nWorkflow started: $($start.ToString('o'))`nWorkflow completed: $($end.ToString('o'))`nWorkflow duration: $($duration.ToString('hh\:mm\:ss'))`n`nAsset SHA-256:`n$hashLines"
           $notes | Set-Content release-notes.md -Encoding utf8
-          gh release edit $tag --repo "$env:GITHUB_REPOSITORY" --notes-file release-notes.md
-          gh release edit $tag --repo "$env:GITHUB_REPOSITORY" --draft=false --latest
+          gh release edit $tag --repo "$env:GITHUB_REPOSITORY" --draft=false --latest --notes-file release-notes.md

@@ -10,7 +10,7 @@
     "validate:data": "node data/validate.mjs",
     "validate:additions": "node ../../scripts/validate-catalog-additions.mjs",
     "build:installer": "node ../../scripts/clean-installer-output.mjs && node ../../scripts/ensure-icon.mjs && electron-builder --win squirrel --x64",
-    "verify:installer": "node ../../scripts/verify-installer.mjs --signature-status=NotSigned",
+    "verify:installer": "node ../../scripts/verify-installer.mjs",
     "test:installer-contract": "node ../../scripts/test-installer-contract.mjs"
   },
   "devDependencies": {
