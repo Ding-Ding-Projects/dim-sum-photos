@@ -1,11 +1,12 @@
-const { app, BrowserWindow, ipcMain, dialog, autoUpdater } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { pathToFileURL, fileURLToPath } = require('url');
 const os = require('os');
-const { spawnSync, spawn } = require('child_process');
+const { spawnSync } = require('child_process');
 const https = require('https');
 const { UpdaterEngine, validHttpsUrl } = require('./updater/engine');
+const { createSquirrelRuntime } = require('./updater/squirrel-runtime');
 const isPrimaryInstance = app.requestSingleInstanceLock();
 if (!isPrimaryInstance) app.quit();
 const IMAGE_RELEASE_BASE = 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/';
@@ -37,17 +38,8 @@ function setupUpdater() {
     currentVersion: app.getVersion(),
     feedUrl,
     storageRoot: path.join(app.getPath('userData'), 'updates'),
-    runtime: {
-      installPackage: (stagedPath) => new Promise((resolve, reject) => {
-        const updateExe = path.resolve(path.dirname(process.execPath), '..', 'Update.exe');
-        if (!fs.existsSync(updateExe)) return reject(new Error('Squirrel Update.exe is not present in this installed package.'));
-        const child = spawn(updateExe, ['--update', stagedPath], { detached: true, windowsHide: true, stdio: 'ignore', shell: false });
-        child.once('error', reject);
-        child.once('spawn', () => { child.unref(); app.quit(); resolve({ stagedPath }); });
-      })
-    }
+    runtime: createSquirrelRuntime({ updateExe: path.resolve(path.dirname(process.execPath), '..', 'Update.exe'), quit: () => app.quit() })
   });
-  autoUpdater.setFeedURL({ url: feedUrl });
   updater.onState((state) => BrowserWindow.getAllWindows().forEach((window) => window.webContents.send('updater:state', state)));
   updater.start();
   updater.check({ trigger: 'startup' }).catch(() => undefined);

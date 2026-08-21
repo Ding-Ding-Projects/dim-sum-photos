@@ -166,7 +166,8 @@ class UpdaterEngine {
     const free = typeof this.fs.statfsSync === 'function' ? this.fs.statfsSync(this.storageRoot).bavail * this.fs.statfsSync(this.storageRoot).bsize : Number.MAX_SAFE_INTEGER;
     if (free < pkg.size * 2) throw new Error('Insufficient storage for a safe staged update.');
     const temp = this.path.join(this.storageRoot, `.update-${generation}-${process.pid}.partial`);
-    const finalPath = this.path.join(this.storageRoot, pkg.filename.replace(/[^\w.\-]/g, '_'));
+    const packagePath = this.path.join(this.storageRoot, pkg.filename.replace(/[^\w.\-]/g, '_'));
+    const feedDirectory = this.path.join(this.storageRoot, `feed-${this.state.availableVersion}`);
     let lastError;
     const controller = new AbortController();
     this.downloadAbort = controller;
@@ -192,11 +193,18 @@ class UpdaterEngine {
         const hash = crypto.createHash('sha256').update(body).digest('hex');
         if (hash !== pkg.sha256) throw new Error('Update package hash does not match metadata.');
         if (generation !== this.generation) throw new Error('Update download was superseded.');
+        const sha1 = crypto.createHash('sha1').update(body).digest('hex');
+        const releasesLine = `${sha1} ${pkg.size} ${pkg.filename}\n`;
+        this.fs.mkdirSync(feedDirectory, { recursive: true });
         this.fs.writeFileSync(temp, body, { flag: 'wx' });
-        this.fs.renameSync(temp, finalPath);
-        this._persist({ version: this.state.availableVersion, path: finalPath, sha256: hash });
+        this.fs.renameSync(temp, packagePath);
+        const feedReleaseTemp = this.path.join(feedDirectory, `.RELEASES-${process.pid}.tmp`);
+        this.fs.copyFileSync(packagePath, this.path.join(feedDirectory, pkg.filename));
+        this.fs.writeFileSync(feedReleaseTemp, releasesLine, 'utf8');
+        this.fs.renameSync(feedReleaseTemp, this.path.join(feedDirectory, 'RELEASES'));
+        this._persist({ version: this.state.availableVersion, path: feedDirectory, packagePath: this.path.join(feedDirectory, pkg.filename), sha256: hash, sha1, size: pkg.size, releasesLine });
         this.downloadAbort = null;
-        this.emit({ state: 'ready', stagedPath: finalPath, package: { ...pkg, sha256: hash }, progress: { received: pkg.size, total: pkg.size, fraction: 1 } });
+        this.emit({ state: 'ready', stagedPath: feedDirectory, package: { ...pkg, sha256: hash, sha1, feedDirectory, packagePath: this.path.join(feedDirectory, pkg.filename), releasesLine }, progress: { received: pkg.size, total: pkg.size, fraction: 1 } });
         return this.snapshot();
       } catch (error) { lastError = error; if (this.fs.existsSync(temp)) this.fs.rmSync(temp, { force: true }); if (error.name === 'AbortError' || controller.signal.aborted) break; if (attempt < this.maxRetries) continue; }
     }

@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { UpdaterEngine, compareVersions } = require('../src/updater/engine.js');
+const { createSquirrelRuntime } = require('../src/updater/squirrel-runtime.js');
 
 function feed(version, body, extra = {}) {
   return Buffer.from(JSON.stringify({
@@ -72,7 +73,8 @@ test('check and download validate identity, hash, size, retry, and ready state',
   assert.equal(checked.state, 'available');
   const ready = await engine.download();
   assert.equal(ready.state, 'ready');
-  assert.equal(fs.readFileSync(ready.stagedPath).toString(), body.toString());
+  assert.equal(fs.readFileSync(ready.package.packagePath).toString(), body.toString());
+  assert.equal(fs.readFileSync(path.join(ready.stagedPath, 'RELEASES')).toString(), ready.package.releasesLine);
   assert.equal(fs.existsSync(path.join(root, 'last-valid-update.json')), true);
   assert.equal(transport.calls, 2);
   fs.rmSync(root, { recursive: true, force: true });
@@ -105,6 +107,21 @@ test('restart interlock never restarts over dirty or in-flight work', async () =
   assert.equal(calls.length, 1);
   assert.equal(calls[0].file, engine.snapshot().stagedPath);
   assert.equal(calls[0].identity.sha256, engine.snapshot().package.sha256);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('production Squirrel seam invokes Update.exe with the validated feed directory', async () => {
+  const calls = []; let exited = false;
+  const child = { once(event, listener) { if (event === 'spawn') setImmediate(listener); return this; }, unref() { exited = true; } };
+  const runtime = createSquirrelRuntime({ updateExe: 'C:\\Installed\\Update.exe', spawnProcess: (...args) => { calls.push(args); return child; }, quit: () => { exited = true; } });
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-feed-'));
+  const packagePath = path.join(root, 'Atlas.nupkg'); const releasesLine = 'a'.repeat(40) + ' 7 Atlas.nupkg\n';
+  fs.writeFileSync(packagePath, 'package'); fs.writeFileSync(path.join(root, 'RELEASES'), releasesLine);
+  await runtime.installPackage(root, { packagePath, releasesLine });
+  assert.deepEqual(calls[0][0], 'C:\\Installed\\Update.exe');
+  assert.deepEqual(calls[0][1], ['--update', root]);
+  assert.equal(calls[0][2].shell, false);
+  assert.equal(exited, true);
   fs.rmSync(root, { recursive: true, force: true });
 });
 
