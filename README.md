@@ -19,3 +19,7 @@ The app maps each catalog image to its split release part and caches downloaded 
 ## Windows installer
 
 The desktop release is packaged only as an intentionally unsigned Squirrel.Windows installer. Run `build-installer.bat /s` for the reproducible local path. It runs `npm ci`, generates the committed multi-resolution `apps/dim-sum-atlas/build/icon.ico`, builds `Setup.exe`, `RELEASES`, the full `.nupkg`, and any delta packages, then writes SHA-256 evidence. Code signing is disabled by policy and the installer is independently checked as `NotSigned`.
+
+For a runnable checkout build, use `build.bat /s`. Both root scripts invoke the repository's dependency bootstrap path and are the supported entry points; release packaging must not bypass them. The current `0.1.1` candidate is not published yet. Local evidence proves package creation, a silent headless installation, and an installed pre-release launch, but it does not prove a published update feed or remote release.
+
+Documentation: [feature index](docs/README.md), [installer and updater proof inventory](docs/features/installer-update-proof.md), [automatic updates](docs/features/automatic-update.md).
