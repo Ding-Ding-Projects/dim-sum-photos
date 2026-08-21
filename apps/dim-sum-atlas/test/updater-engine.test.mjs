@@ -27,10 +27,11 @@ function transportFor(metadata, body, options = {}) {
   let calls = 0;
   return {
     get calls() { return calls; },
-    async request(url) {
+    async request(url, options = {}) {
       calls += 1;
       if (options.failures && calls <= options.failures) throw new Error('temporary network failure');
       if (url.includes('/feed')) return { statusCode: 200, headers: {}, body: metadata };
+      if (typeof options.onChunk === 'function') { options.onChunk(body.subarray(0, Math.ceil(body.length / 2))); options.onChunk(body.subarray(Math.ceil(body.length / 2))); }
       return { statusCode: 200, headers: {}, body };
     }
   };
@@ -94,13 +95,41 @@ test('restart interlock never restarts over dirty or in-flight work', async () =
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-lock-'));
   const body = Buffer.from('package');
   const calls = [];
-  const engine = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport: transportFor(feed('1.1.0', body), body), runtime: { quitAndInstall: () => calls.push('restart') } });
+  const engine = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport: transportFor(feed('1.1.0', body), body), runtime: { installPackage: (file, identity) => calls.push({ file, identity }) } });
   await engine.check(); await engine.download();
   engine.setWorkState({ dirty: true });
   assert.throws(() => engine.restart(), /unsaved/);
   engine.setWorkState({ inFlight: true });
   assert.throws(() => engine.restart(), /active/);
   engine.setWorkState({}); engine.restart();
-  assert.deepEqual(calls, ['restart']);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].file, engine.snapshot().stagedPath);
+  assert.equal(calls[0].identity.sha256, engine.snapshot().package.sha256);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('cancel aborts a pending download and progress reports intermediate bytes', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-cancel-'));
+  const body = Buffer.from('slow package bytes');
+  let resolveRequest;
+  const transport = {
+    async request(url, options = {}) {
+      if (url.includes('/feed')) return { statusCode: 200, headers: {}, body: feed('1.1.0', body) };
+      return new Promise((resolve, reject) => {
+        options.signal?.addEventListener('abort', () => { const error = Object.assign(new Error('cancelled'), { name: 'AbortError' }); reject(error); }, { once: true });
+        options.onChunk?.(body.subarray(0, 3));
+        resolveRequest = () => resolve({ statusCode: 200, headers: {}, body });
+      });
+    }
+  };
+  const engine = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport, maxRetries: 0 });
+  const progress = []; engine.onState((state) => { if (state.progress) progress.push(state.progress.received); });
+  await engine.check();
+  const pending = engine.download();
+  assert.equal(typeof resolveRequest, 'function');
+  assert.equal(progress.some((value) => value > 0 && value < body.length), true);
+  assert.equal(engine.cancel(), true);
+  await pending;
+  assert.equal(engine.snapshot().state, 'available');
   fs.rmSync(root, { recursive: true, force: true });
 });

@@ -41,9 +41,10 @@ function createHttpsTransport() {
       return new Promise((resolve, reject) => {
         const request = https.get(url, { headers: { 'User-Agent': 'Dim-Sum-Atlas-Updater/1', Accept: 'application/json', ...options.headers } }, (response) => {
           const chunks = []; let bytes = 0;
-          response.on('data', (chunk) => { bytes += chunk.length; chunks.push(chunk); });
+          response.on('data', (chunk) => { bytes += chunk.length; chunks.push(chunk); if (typeof options.onChunk === 'function') options.onChunk(chunk); });
           response.on('end', () => resolve({ statusCode: response.statusCode, headers: response.headers, body: Buffer.concat(chunks) }));
         });
+        if (options.signal) options.signal.addEventListener('abort', () => request.destroy(Object.assign(new Error('Update download cancelled.'), { name: 'AbortError' })), { once: true });
         request.setTimeout(options.timeoutMs || 15000, () => request.destroy(new Error('Update request timed out.')));
         request.on('error', reject);
       });
@@ -70,6 +71,7 @@ class UpdaterEngine {
     this.timer = null;
     this.checkPromise = null;
     this.downloadPromise = null;
+    this.downloadAbort = null;
     this.generation = 0;
     this.state = {
       state: validHttpsUrl(this.feedUrl) ? 'idle' : 'disabled',
@@ -110,13 +112,13 @@ class UpdaterEngine {
     return this.checkPromise;
   }
 
-  async _requestFollowingRedirects(url, redirects = 0) {
+  async _requestFollowingRedirects(url, redirects = 0, options = {}) {
     if (!validHttpsUrl(url)) throw new Error('Update feed and package URLs must use credential-free HTTPS.');
-    const response = await this.transport.request(url, { timeoutMs: 15000 });
+    const response = await this.transport.request(url, { timeoutMs: 15000, ...options });
     if (response.statusCode >= 300 && response.statusCode < 400 && response.headers && response.headers.location) {
       if (redirects >= MAX_REDIRECTS) throw new Error('Update feed exceeded the redirect limit.');
       const next = new URL(response.headers.location, url).toString();
-      return this._requestFollowingRedirects(next, redirects + 1);
+      return this._requestFollowingRedirects(next, redirects + 1, options);
     }
     return response;
   }
@@ -166,12 +168,26 @@ class UpdaterEngine {
     const temp = this.path.join(this.storageRoot, `.update-${generation}-${process.pid}.partial`);
     const finalPath = this.path.join(this.storageRoot, pkg.filename.replace(/[^\w.\-]/g, '_'));
     let lastError;
+    const controller = new AbortController();
+    this.downloadAbort = controller;
+    let received = 0;
     this.emit({ state: 'downloading', progress: { received: 0, total: pkg.size, fraction: 0 }, error: null });
     for (let attempt = 0; attempt <= this.maxRetries; attempt += 1) {
       try {
-        const response = await this._requestFollowingRedirects(pkg.url);
+        received = 0;
+        const response = await this._requestFollowingRedirects(pkg.url, 0, {
+          signal: controller.signal,
+          onChunk: (chunk) => {
+            received += chunk.length;
+            this.emit({ progress: { received, total: pkg.size, fraction: Math.min(1, received / pkg.size) } });
+          }
+        });
         if (response.statusCode !== 200) throw new Error(`Update package returned HTTP ${response.statusCode}.`);
         const body = Buffer.isBuffer(response.body) ? response.body : Buffer.from(response.body || '');
+        if (received === 0) {
+          received = body.length;
+          this.emit({ progress: { received, total: pkg.size, fraction: Math.min(1, received / pkg.size) } });
+        }
         if (body.length !== pkg.size) throw new Error('Update package size does not match metadata.');
         const hash = crypto.createHash('sha256').update(body).digest('hex');
         if (hash !== pkg.sha256) throw new Error('Update package hash does not match metadata.');
@@ -179,9 +195,15 @@ class UpdaterEngine {
         this.fs.writeFileSync(temp, body, { flag: 'wx' });
         this.fs.renameSync(temp, finalPath);
         this._persist({ version: this.state.availableVersion, path: finalPath, sha256: hash });
-        this.emit({ state: 'ready', stagedPath: finalPath, progress: { received: pkg.size, total: pkg.size, fraction: 1 } });
+        this.downloadAbort = null;
+        this.emit({ state: 'ready', stagedPath: finalPath, package: { ...pkg, sha256: hash }, progress: { received: pkg.size, total: pkg.size, fraction: 1 } });
         return this.snapshot();
-      } catch (error) { lastError = error; if (this.fs.existsSync(temp)) this.fs.rmSync(temp, { force: true }); if (attempt < this.maxRetries) continue; }
+      } catch (error) { lastError = error; if (this.fs.existsSync(temp)) this.fs.rmSync(temp, { force: true }); if (error.name === 'AbortError' || controller.signal.aborted) break; if (attempt < this.maxRetries) continue; }
+    }
+    this.downloadAbort = null;
+    if (controller.signal.aborted) {
+      this.emit({ state: 'available', progress: null, error: 'Update download cancelled.' });
+      return this.snapshot();
     }
     this.emit({ state: 'error', error: lastError.message, progress: null });
     throw lastError;
@@ -190,14 +212,15 @@ class UpdaterEngine {
   cancel() {
     if (!this.downloadPromise) return false;
     this.generation += 1;
+    if (this.downloadAbort) this.downloadAbort.abort();
     this.emit({ state: this.state.availableVersion ? 'available' : 'idle', progress: null, error: 'Update download cancelled.' });
     return true;
   }
   restart() {
     if (this.state.state !== 'ready' || !this.state.stagedPath) throw new Error('No staged update is ready to install.');
     if (this.workState.dirty || this.workState.inFlight) throw new Error('Restart is deferred while unsaved or active work is present.');
-    if (typeof this.runtime.quitAndInstall !== 'function') throw new Error('Installed updater restart is unavailable.');
-    this.runtime.quitAndInstall();
+    if (typeof this.runtime.installPackage !== 'function') throw new Error('Installed updater package-install seam is unavailable.');
+    return this.runtime.installPackage(this.state.stagedPath, { ...this.state.package, version: this.state.availableVersion });
   }
   _persist(record) {
     if (!this.storageRoot) return;

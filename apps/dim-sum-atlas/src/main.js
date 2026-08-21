@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { pathToFileURL, fileURLToPath } = require('url');
 const os = require('os');
-const { spawnSync } = require('child_process');
+const { spawnSync, spawn } = require('child_process');
 const https = require('https');
 const { UpdaterEngine, validHttpsUrl } = require('./updater/engine');
 const isPrimaryInstance = app.requestSingleInstanceLock();
@@ -37,7 +37,15 @@ function setupUpdater() {
     currentVersion: app.getVersion(),
     feedUrl,
     storageRoot: path.join(app.getPath('userData'), 'updates'),
-    runtime: { quitAndInstall: () => autoUpdater.quitAndInstall() }
+    runtime: {
+      installPackage: (stagedPath) => new Promise((resolve, reject) => {
+        const updateExe = path.resolve(path.dirname(process.execPath), '..', 'Update.exe');
+        if (!fs.existsSync(updateExe)) return reject(new Error('Squirrel Update.exe is not present in this installed package.'));
+        const child = spawn(updateExe, ['--update', stagedPath], { detached: true, windowsHide: true, stdio: 'ignore', shell: false });
+        child.once('error', reject);
+        child.once('spawn', () => { child.unref(); app.quit(); resolve({ stagedPath }); });
+      })
+    }
   });
   autoUpdater.setFeedURL({ url: feedUrl });
   updater.onState((state) => BrowserWindow.getAllWindows().forEach((window) => window.webContents.send('updater:state', state)));
