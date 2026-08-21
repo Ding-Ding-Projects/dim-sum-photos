@@ -1,9 +1,18 @@
 @echo off
-setlocal
-call "%~dp0download-dependencies.bat" %1 || exit /b %errorlevel%
+setlocal EnableExtensions EnableDelayedExpansion
+for %%A in (%*) do if /I "%%~A"=="/s" set "SILENT=1"
+for %%A in (%*) do if /I "%%~A"=="--silent" set "SILENT=1"
+call "%~dp0download-dependencies.bat" %* || exit /b !ERRORLEVEL!
 pushd "%~dp0apps\dim-sum-atlas"
-npm run build:installer && npm run verify:installer
-if errorlevel 1 exit /b %errorlevel%
+npm run build:installer
+set "RC=!ERRORLEVEL!"
+if "!RC!"=="0" (
+  for /f "delims=" %%S in ('powershell.exe -NoProfile -Command "(Get-AuthenticodeSignature -LiteralPath (Get-ChildItem -LiteralPath ''dist\squirrel-windows'' -Filter ''Dim-Sum-Atlas-*.exe'' | Select-Object -First 1).FullName).Status"') do set "SIGNATURE=%%S"
+  if /I not "!SIGNATURE!"=="NotSigned" set "RC=1"
+)
+if "!RC!"=="0" npm run verify:installer
+set "RC=!ERRORLEVEL!"
 popd
-echo Unsigned Squirrel.Windows installer verified. No signing certificate is used.
-exit /b 0
+if not "!RC!"=="0" exit /b !RC!
+if /I not "%SILENT%"=="1" echo Unsigned Squirrel.Windows installer verified independently as NotSigned.
+endlocal & exit /b 0
