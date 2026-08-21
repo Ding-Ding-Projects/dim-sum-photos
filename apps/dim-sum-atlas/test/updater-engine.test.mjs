@@ -4,10 +4,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { EventEmitter } from 'node:events';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { UpdaterEngine, compareVersions, validPackageFilename } = require('../src/updater/engine.js');
+const { UpdaterEngine, compareVersions, validPackageFilename, createHttpsTransport } = require('../src/updater/engine.js');
 const { createSquirrelRuntime } = require('../src/updater/squirrel-runtime.js');
 
 function feed(version, body, extra = {}) {
@@ -283,4 +284,32 @@ test('streaming redirect limit fails and cleans temporary state', async () => {
   await assert.rejects(() => engine.download(), /redirect limit/);
   assert.equal(fs.readdirSync(root).length, 0);
   fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('transport discards huge redirect bodies without creating a temp or returning body data', async () => {
+  let destroyed = false;
+  const client = { get(_url, _options, callback) {
+    const request = new EventEmitter(); request.setTimeout = () => {}; request.destroy = () => { destroyed = true; };
+    const response = new EventEmitter(); response.statusCode = 302; response.headers = { location: 'https://updates.example.test/final' }; response.destroy = () => { destroyed = true; };
+    setImmediate(() => { callback(response); response.emit('data', Buffer.alloc(2 * 1024 * 1024)); response.emit('end'); });
+    return request;
+  } };
+  const transport = createHttpsTransport({ httpsClient: client });
+  const result = await transport.request('https://updates.example.test/start', { streamTo: path.join(os.tmpdir(), `discard-${process.pid}.nupkg`) });
+  assert.equal(result.body, undefined);
+  assert.equal(result.statusCode, 302);
+  assert.equal(destroyed, false);
+});
+
+test('transport rejects oversized metadata while receiving it', async () => {
+  let destroyed = false;
+  const client = { get(_url, _options, callback) {
+    const request = new EventEmitter(); request.setTimeout = () => {}; request.destroy = () => { destroyed = true; };
+    const response = new EventEmitter(); response.statusCode = 200; response.headers = {}; response.destroy = () => { destroyed = true; };
+    setImmediate(() => { callback(response); response.emit('data', Buffer.alloc(300 * 1024)); });
+    return request;
+  } };
+  const transport = createHttpsTransport({ httpsClient: client });
+  await assert.rejects(() => transport.request('https://updates.example.test/feed'), /metadata exceeds/);
+  assert.equal(destroyed, true);
 });

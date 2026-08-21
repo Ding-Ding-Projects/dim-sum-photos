@@ -39,12 +39,12 @@ function safeState(state) {
   return { ...state, package: state.package ? { ...state.package } : undefined };
 }
 
-function createHttpsTransport() {
+function createHttpsTransport({ httpsClient = https } = {}) {
   return {
     streaming: true,
     request(url, options = {}) {
       return new Promise((resolve, reject) => {
-        const request = https.get(url, { headers: { 'User-Agent': 'Dim-Sum-Atlas-Updater/1', Accept: 'application/json', ...options.headers } }, (response) => {
+        const request = httpsClient.get(url, { headers: { 'User-Agent': 'Dim-Sum-Atlas-Updater/1', Accept: 'application/json', ...options.headers } }, (response) => {
           if (options.streamTo && response.statusCode === 200) {
             const file = fs.createWriteStream(options.streamTo, { flags: 'wx' });
             file.on('error', reject);
@@ -53,9 +53,26 @@ function createHttpsTransport() {
             file.on('finish', () => file.close(() => resolve({ statusCode: response.statusCode, headers: response.headers })));
             return;
           }
-          const chunks = [];
-          response.on('data', (chunk) => { chunks.push(chunk); if (!options.streamTo && typeof options.onChunk === 'function') options.onChunk(chunk); });
-          response.on('end', () => resolve({ statusCode: response.statusCode, headers: response.headers, body: Buffer.concat(chunks) }));
+          if (options.streamTo) {
+            response.on('data', () => {});
+            response.on('end', () => resolve({ statusCode: response.statusCode, headers: response.headers }));
+            response.on('error', reject);
+            return;
+          }
+          const chunks = []; let bytes = 0; let overflowed = false;
+          response.on('data', (chunk) => {
+            if (overflowed) return;
+            bytes += chunk.length;
+            if (bytes > MAX_METADATA_BYTES) {
+              overflowed = true;
+              response.destroy();
+              request.destroy();
+              reject(new Error('Update metadata exceeds the safety limit.'));
+              return;
+            }
+            chunks.push(chunk); if (typeof options.onChunk === 'function') options.onChunk(chunk);
+          });
+          response.on('end', () => { if (!overflowed) resolve({ statusCode: response.statusCode, headers: response.headers, body: Buffer.concat(chunks) }); });
         });
         if (options.signal) options.signal.addEventListener('abort', () => request.destroy(Object.assign(new Error('Update download cancelled.'), { name: 'AbortError' })), { once: true });
         request.setTimeout(options.timeoutMs || 15000, () => request.destroy(new Error('Update request timed out.')));
