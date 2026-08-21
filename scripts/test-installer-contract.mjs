@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
+import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -8,6 +10,8 @@ const pkg = JSON.parse(read('apps/dim-sum-atlas/package.json'));
 const workflow = read('.github/workflows/electron-release.yml');
 const verify = read('scripts/verify-installer.mjs');
 const clean = read('scripts/clean-installer-output.mjs');
+const gitignore = read('.gitignore');
+const gitattributes = read('.gitattributes');
 const { assembleCatalog } = await import('./catalog-assembly.mjs');
 const assembled = assembleCatalog(root);
 
@@ -47,6 +51,33 @@ assert.match(verify, /Packaged catalog count mismatch/);
 assert.match(verify, /expectedCatalog\.dishes\.length/);
 assert.match(verify, /dishes\.length===0/);
 assert.match(clean, /squirrel-windows/);
+assert.match(gitignore, /^\.tools\/$/m, 'root tool cache must be ignored exactly');
+assert.match(gitignore, /^apps\/dim-sum-atlas\/portable\/$/m, 'portable runtime cache must be ignored exactly');
+assert.match(gitattributes, /^apps\/dim-sum-atlas\/build\/icon-manifest\.json text eol=lf$/m, 'generated icon manifest must stay LF');
+assert.match(gitattributes, /^scripts\/ensure-icon\.mjs text eol=lf$/m, 'icon generator source must stay LF');
+for (const ignoredPath of ['.tools/probe', 'apps/dim-sum-atlas/portable/probe']) {
+  const ignored = spawnSync('git', ['check-ignore', '--quiet', ignoredPath], { cwd: root });
+  assert.equal(ignored.status, 0, `${ignoredPath} must match an exact generated-cache ignore rule`);
+}
+const iconFixture = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-icon-hygiene-'));
+try {
+  fs.mkdirSync(path.join(iconFixture, 'scripts'), { recursive: true });
+  fs.mkdirSync(path.join(iconFixture, 'apps', 'dim-sum-atlas', 'build'), { recursive: true });
+  fs.copyFileSync(path.join(root, 'scripts', 'ensure-icon.mjs'), path.join(iconFixture, 'scripts', 'ensure-icon.mjs'));
+  for (const iconPath of ['apps/dim-sum-atlas/build/icon.ico', 'apps/dim-sum-atlas/build/icon-manifest.json']) {
+    const tracked = spawnSync('git', ['show', `HEAD:${iconPath}`], { cwd: root, encoding: null, maxBuffer: 4 * 1024 * 1024 });
+    assert.equal(tracked.status, 0, `failed to refresh ${iconPath} from HEAD`);
+    fs.writeFileSync(path.join(iconFixture, iconPath), tracked.stdout);
+  }
+  const generated = spawnSync(process.execPath, ['scripts/ensure-icon.mjs'], { cwd: iconFixture, encoding: 'utf8' });
+  assert.equal(generated.status, 0, generated.stderr || generated.stdout);
+  for (const iconPath of ['apps/dim-sum-atlas/build/icon.ico', 'apps/dim-sum-atlas/build/icon-manifest.json']) {
+    const tracked = spawnSync('git', ['show', `HEAD:${iconPath}`], { cwd: root, encoding: null, maxBuffer: 4 * 1024 * 1024 });
+    assert.deepEqual(fs.readFileSync(path.join(iconFixture, iconPath)), tracked.stdout, `${iconPath} must remain byte-identical after generation`);
+  }
+} finally {
+  fs.rmSync(iconFixture, { recursive: true, force: true });
+}
 for (const script of ['download-dependencies.bat', 'build.bat', 'build-installer.bat']) {
   const source = read(script);
   assert.match(source, /%\*/);
