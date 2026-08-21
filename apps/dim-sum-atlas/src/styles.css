@@ -46,3 +46,58 @@ dialog button { min-height: 38px; border: 0; border-radius: 999px; padding: 8px 
 .archive-tools input, .archive-tools select { min-height: 36px; }
 .archive-output { max-height: 180px; overflow: auto; white-space: pre-wrap; background: #edf3ee; padding: 10px; border-radius: 10px; }
 .image-unavailable { min-height: 160px; background: #e4eee7; object-fit: none; }
+.updater-surface { max-width: 1300px; margin: 16px auto 0; }
+.updater-card { border: 1px solid var(--outline); border-radius: var(--radius); background: var(--surface); padding: 18px 20px; box-shadow: 0 8px 24px #18312618; }
+.updater-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.updater-card-head .eyebrow { margin-bottom: 4px; }
+.updater-card h2 { margin: 0; font-size: 22px; }
+.updater-state { border: 1px solid var(--outline); border-radius: 99px; color: var(--muted); font-size: 12px; padding: 6px 10px; white-space: nowrap; }
+.updater-state[data-state="ready"], .updater-state[data-state="available"] { color: #1c5c38; background: #d9f2df; border-color: #9ccbaa; }
+.updater-state[data-state="error"], .updater-state[data-state="unavailable"] { color: #8a342e; background: #fde2de; border-color: #e4aaa3; }
+.updater-message { margin: 10px 0 8px; color: var(--ink); font-weight: 650; }
+.updater-facts { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-size: 12px; }
+.updater-facts strong { color: var(--ink); }
+.updater-progress-wrap { margin: 13px 0 4px; }
+.updater-progress-label { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+.updater-progress-wrap progress { display: block; width: 100%; min-height: 10px; accent-color: var(--accent); }
+.updater-warning, .updater-blocked { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; font-size: 12px; line-height: 1.45; }
+.updater-warning { color: #704b13; background: #fff0c9; border: 1px solid #e3c87b; }
+.updater-blocked { color: #704b13; background: #fff0c9; border: 1px solid #e3c87b; }
+.updater-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.updater-actions .filter-button[disabled] { cursor: not-allowed; opacity: .55; }
+.updater-history { margin-top: 14px; color: var(--muted); font-size: 12px; }
+.updater-history summary { cursor: pointer; color: var(--ink); font-weight: 650; }
+.updater-history-entry { display: grid; grid-template-columns: 170px 74px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--outline); }
+.updater-history-entry time { white-space: nowrap; }
+.updater-history-entry strong { color: var(--ink); text-transform: capitalize; }
+.updater-settings { border-top: 1px solid #c7d4cc; margin-top: 14px; padding-top: 14px; display: grid; gap: 8px; }
+.updater-settings .eyebrow { margin: 0; }
+.updater-settings-copy, .updater-settings-status { color: #5f7468; font-size: 12px; line-height: 1.45; margin: 0; }
+@media (max-width: 560px) {
+  .updater-surface { margin-top: 12px; }
+  .updater-card { padding: 14px; }
+  .updater-card-head { gap: 8px; }
+  .updater-card h2 { font-size: 19px; }
+  .updater-state { font-size: 11px; padding: 5px 7px; }
+  .updater-actions .filter-button { flex: 1 1 100%; min-height: 42px; }
+  .updater-history-entry { grid-template-columns: 1fr; gap: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .updater-card, .updater-actions, .updater-progress-wrap { transition: none !important; animation: none !important; }
+}
+@media (max-width: 979px) {
+  body { min-width: 0; overflow-x: hidden; }
+  .topbar { min-height: 76px; height: auto; padding: 12px 16px; gap: 10px; }
+  .brand { min-width: 0; }
+  .brand > span:last-child { min-width: 0; }
+  .brand strong, .brand small { overflow-wrap: anywhere; }
+  .tabs { padding: 12px 16px 0; overflow-x: auto; }
+  .tab { flex: 0 0 auto; }
+  main { padding: 0 16px 32px; }
+  .updater-surface { width: 100%; padding: 0 16px; }
+  .hero { margin-top: 28px; align-items: flex-start; flex-direction: column; gap: 18px; }
+  .hero-stat { text-align: left; }
+  .controls { flex-wrap: wrap; }
+  .controls .search { flex-basis: 100%; }
+  .content-grid { grid-template-columns: minmax(0, 1fr); }
+}

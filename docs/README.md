@@ -7,6 +7,7 @@ This documentation index covers the shipped surfaces. The catalog is intentional
 - [Gallery and fictional lore](features/gallery.md)
 - [Bulk image export](features/bulk-export.md)
 - [Windows Electron companion](features/electron.md)
+- [Automatic updates](features/automatic-update.md)
 - [Pages deployment](features/pages.md)
 
 Each article records behavior, configuration, failure modes, security notes, and verification evidence.
