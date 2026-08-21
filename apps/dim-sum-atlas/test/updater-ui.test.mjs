@@ -101,6 +101,20 @@ test('renderer work markers override false core flags before restart', () => {
   assert.deepEqual(updater.readRendererWorkState(operationDocument, { hasUnsavedWork: false, operationInProgress: false }), { hasUnsavedWork: false, operationInProgress: true });
 });
 
+test('disabled service stays unavailable with its exact reason and no retry or failure history', () => {
+  const disabled = updater.normalizeState({ status: 'disabled', reason: 'Updates are disabled by policy.' });
+  assert.equal(disabled.status, 'unavailable');
+  assert.equal(disabled.serviceDisabled, true);
+  assert.equal(disabled.error, 'Updates are disabled by policy.');
+  assert.equal(updater.shouldRecordFailure(disabled), false);
+  assert.equal(updater.shouldShowRetry(disabled), false);
+  assert.equal(updater.isCheckDisabled(disabled, true), true);
+  assert.deepEqual(updater.actionsForState(disabled), ['check']);
+  const failedActions = updater.actionsForState(updater.normalizeState({ status: 'failed', error: 'Network failed.' }));
+  assert.equal(failedActions.filter(action => action === 'retry').length, 1);
+  assert.equal(updater.shouldRecordFailure(updater.normalizeState({ status: 'failed', error: 'Network failed.' })), true);
+});
+
 test('history parsing fails closed and release-note URLs require HTTPS', () => {
   const storage = { getItem: () => '{not-json}' };
   assert.deepEqual(updater.readHistory(storage), []);

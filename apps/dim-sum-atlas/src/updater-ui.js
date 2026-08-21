@@ -16,7 +16,7 @@
     'corrupted-asset': 'corrupt-asset', 'corrupt-download': 'corrupt-asset', 'corrupt-asset': 'corrupt-asset',
     'disk-full': 'insufficient-storage', 'storage-insufficient': 'insufficient-storage', 'insufficient-storage': 'insufficient-storage',
     'rolled-back': 'rollback', rollback: 'rollback',
-    error: 'failed', failure: 'failed', failed: 'failed', unavailable: 'unavailable', disconnected: 'unavailable'
+    error: 'failed', failure: 'failed', failed: 'failed', unavailable: 'unavailable', disconnected: 'unavailable', disabled: 'unavailable'
   };
 
   const copy = {
@@ -96,7 +96,8 @@
 
   function normalizeState(input) {
     const raw = input && typeof input === 'object' ? input : {};
-    const status = String(raw.status || raw.state || 'idle').trim().toLowerCase().replace(/[ _]+/g, '-');
+    const rawStatus = String(raw.status || raw.state || 'idle').trim().toLowerCase().replace(/[ _]+/g, '-');
+    const status = rawStatus;
     const state = STATUS_ALIASES[status] || (CANONICAL_STATES.includes(status) ? status : 'failed');
     const downloadedBytes = Math.max(0, Number(raw.downloadedBytes ?? raw.bytesDownloaded ?? raw.transferredBytes ?? 0) || 0);
     const totalBytes = Math.max(0, Number(raw.totalBytes ?? raw.bytesTotal ?? raw.contentLength ?? 0) || 0);
@@ -112,8 +113,9 @@
       downloadedBytes,
       totalBytes,
       percent: progressPercent(downloadedBytes, totalBytes),
-      error: String(raw.error || raw.errorMessage || '').trim(),
+      error: String(raw.error || raw.errorMessage || raw.reason || raw.message || '').trim(),
       warning: String(raw.warning || '').trim(),
+      serviceDisabled: rawStatus === 'disabled' || raw.disabled === true || raw.unconfigured === true || raw.serviceDisabled === true,
       unsigned: raw.unsigned !== false,
       canRestart: raw.canRestart !== false && !restartBlockedReason && raw.hasUnsavedWork !== true && raw.operationInProgress !== true,
       restartBlockedReason,
@@ -194,6 +196,20 @@
     };
   }
 
+  const RETRYABLE_STATES = new Set(['offline', 'malformed-feed', 'invalid-hash', 'corrupt-asset', 'insufficient-storage', 'rollback', 'failed', 'unavailable', 'cancelled']);
+  function isCheckDisabled(state, hasApi) { return !hasApi || state.serviceDisabled === true || ['checking', 'downloading', 'installing'].includes(state.status); }
+  function shouldShowRetry(state) { return state.serviceDisabled !== true && RETRYABLE_STATES.has(state.status); }
+  function shouldRecordFailure(state) { return state.serviceDisabled !== true && (state.status === 'failed' || RETRYABLE_STATES.has(state.status)); }
+  function actionsForState(state) {
+    const actions = ['check'];
+    if (state.status === 'available') actions.push('download');
+    if (state.status === 'downloading') actions.push('cancel');
+    if (shouldShowRetry(state)) actions.push('retry');
+    if (state.status === 'ready') actions.push('restart', 'later');
+    if (['available', 'ready'].includes(state.status) && safeUrl(state.releaseNotesUrl)) actions.push('release-notes');
+    return actions;
+  }
+
   function mount(options = {}) {
     const documentRef = options.document || global.document;
     if (!documentRef) return null;
@@ -212,7 +228,7 @@
     let localPostponed = false;
     let current = state;
 
-    root.innerHTML = '<div class="updater-card" role="region" aria-labelledby="updater-title"><div class="updater-card-head"><div><p class="eyebrow">Updates</p><h2 id="updater-title" data-updater-copy="heading"></h2></div><span class="updater-state" data-updater-state></span></div><p class="updater-message" data-updater-message role="status" aria-live="polite"></p><div class="updater-facts" data-updater-facts></div><div class="updater-progress-wrap" data-updater-progress-wrap hidden><div class="updater-progress-label"><span data-updater-progress-text></span><span data-updater-progress-bytes></span></div><progress data-updater-progress aria-label="Update download progress" min="0" max="100" value="0"></progress></div><p class="updater-warning" data-updater-warning hidden></p><p class="updater-blocked" data-updater-blocked hidden></p><div class="updater-actions" data-updater-actions></div><details class="updater-history"><summary data-updater-history-heading></summary><div data-updater-history-list></div></details></div>';
+    root.innerHTML = '<div class="updater-card" role="region" aria-labelledby="updater-title"><div class="updater-card-head"><div><p class="eyebrow">Updates</p><h2 id="updater-title" data-updater-copy="heading"></h2></div><span class="updater-state" data-updater-state></span></div><p class="updater-message" data-updater-message role="status" aria-live="polite"></p><div class="updater-facts" data-updater-facts></div><div class="updater-progress-wrap" data-updater-progress-wrap hidden><div class="updater-progress-label"><span data-updater-progress-text></span><span data-updater-progress-bytes></span></div><progress data-updater-progress aria-label="Update download progress" min="0" max="100" value="0"></progress></div><p class="updater-warning" data-updater-warning hidden></p><p class="updater-error" data-updater-error hidden role="alert"></p><p class="updater-blocked" data-updater-blocked hidden></p><div class="updater-actions" data-updater-actions></div><details class="updater-history"><summary data-updater-history-heading></summary><div data-updater-history-list></div></details></div>';
     root.setAttribute('tabindex', '-1');
     if (settingsRoot) settingsRoot.innerHTML = '<p class="eyebrow" data-updater-settings-heading></p><p class="updater-settings-copy" data-updater-settings-copy></p><button type="button" class="filter-button" data-updater-action="check"></button><div class="updater-settings-status" data-updater-settings-status role="status"></div>';
 
@@ -255,6 +271,7 @@
       const stateLabel = q('[data-updater-state]');
       const facts = q('[data-updater-facts]');
       const warning = q('[data-updater-warning]');
+      const errorDetail = q('[data-updater-error]');
       const blocked = q('[data-updater-blocked]');
       const progressWrap = q('[data-updater-progress-wrap]');
       const progress = q('[data-updater-progress]');
@@ -285,17 +302,21 @@
       progress.setAttribute('aria-valuetext', current.totalBytes ? `${current.percent}%` : localizeUpdater('progressUnavailable', activeSettings));
       progressText.textContent = current.totalBytes ? `${current.percent}%` : localizeUpdater('progressUnavailable', activeSettings);
       progressBytes.textContent = current.totalBytes ? `${formatBytes(current.downloadedBytes)} ${localizeUpdater('bytesOf', activeSettings)} ${formatBytes(current.totalBytes)}` : formatBytes(current.downloadedBytes);
-      warning.hidden = !(current.unsigned && ['available', 'downloading', 'ready'].includes(current.status));
-      warning.textContent = warning.hidden ? '' : localizeUpdater('unsigned', activeSettings);
+      warning.hidden = !(current.warning || (current.unsigned && ['available', 'downloading', 'ready'].includes(current.status)));
+      warning.textContent = warning.hidden ? '' : (current.warning || localizeUpdater('unsigned', activeSettings));
+      errorDetail.hidden = !current.error;
+      errorDetail.textContent = current.error;
       blocked.hidden = current.canRestart || !['ready', 'available'].includes(current.status);
       blocked.textContent = blocked.hidden ? '' : (current.restartBlockedReason || localizeUpdater('restartBlocked', activeSettings));
-      let buttons = actionButton('check', localizeUpdater('check', activeSettings), ['checking', 'downloading', 'installing'].includes(current.status));
-      if (current.status === 'available') buttons += actionButton('download', localizeUpdater('download', activeSettings));
-      if (current.status === 'downloading') buttons += actionButton('cancel', localizeUpdater('cancel', activeSettings));
-      if (current.status === 'error' || current.status === 'cancelled') buttons += actionButton('retry', localizeUpdater('retry', activeSettings));
-      if (current.status === 'ready') buttons += actionButton('restart', localizeUpdater('restart', activeSettings), !current.canRestart) + actionButton('later', localizeUpdater('later', activeSettings));
-      if (['offline', 'malformed-feed', 'invalid-hash', 'corrupt-asset', 'insufficient-storage', 'rollback', 'failed', 'unavailable', 'cancelled'].includes(current.status)) buttons += actionButton('retry', localizeUpdater('retry', activeSettings));
-      if (['available', 'ready'].includes(current.status) && safeUrl(current.releaseNotesUrl)) buttons += actionLink('release-notes', localizeUpdater('releaseNotes', activeSettings), safeUrl(current.releaseNotesUrl));
+      const buttons = actionsForState(current).map(action => {
+        if (action === 'check') return actionButton(action, localizeUpdater('check', activeSettings), isCheckDisabled(current, Boolean(api)));
+        if (action === 'download') return actionButton(action, localizeUpdater('download', activeSettings));
+        if (action === 'cancel') return actionButton(action, localizeUpdater('cancel', activeSettings));
+        if (action === 'retry') return actionButton(action, localizeUpdater('retry', activeSettings));
+        if (action === 'restart') return actionButton(action, localizeUpdater('restart', activeSettings), !current.canRestart);
+        if (action === 'later') return actionButton(action, localizeUpdater('later', activeSettings));
+        return actionLink(action, localizeUpdater('releaseNotes', activeSettings), safeUrl(current.releaseNotesUrl));
+      }).join('');
       actions.innerHTML = buttons;
       root.dataset.state = current.status;
       root.hidden = false;
@@ -303,7 +324,7 @@
         settingsRoot.querySelector('[data-updater-settings-heading]').textContent = localizeUpdater('settingsHeading', activeSettings);
         settingsRoot.querySelector('[data-updater-settings-copy]').textContent = api ? localizeUpdater('check', activeSettings) : localizeUpdater('integration', activeSettings);
         settingsRoot.querySelector('[data-updater-action="check"]').textContent = localizeUpdater('check', activeSettings);
-        settingsRoot.querySelector('[data-updater-action="check"]').disabled = ['checking', 'downloading', 'installing'].includes(current.status) || !api;
+        settingsRoot.querySelector('[data-updater-action="check"]').disabled = isCheckDisabled(current, Boolean(api));
         settingsRoot.querySelector('[data-updater-settings-status]').textContent = localizeUpdater(key, activeSettings);
       }
       q('[data-updater-history-heading]').textContent = `${localizeUpdater('historyHeading', activeSettings)} (${readHistory(storage).length})`;
@@ -350,12 +371,12 @@
         }
         else if (action === 'release-notes') { restoreFocus(); return; }
         const normalized = normalizeState(next);
-        if (['failed', 'unavailable', 'offline', 'malformed-feed', 'invalid-hash', 'corrupt-asset', 'insufficient-storage', 'rollback'].includes(normalized.status)) record('failure', normalized, normalized.error || localizeUpdater(normalized.status, settings()));
+        if (shouldRecordFailure(normalized)) record('failure', normalized, normalized.error || localizeUpdater(normalized.status, settings()));
         if (normalized.warning) record('warning', normalized, normalized.warning);
         render(normalized);
       } catch (error) {
-        const failed = normalizeState({ ...current, status: api ? 'error' : 'unavailable', error: error.message });
-        record('failure', failed, failed.error || localizeUpdater('unavailable', settings()));
+        const failed = normalizeState({ ...current, status: api ? 'error' : 'unavailable', serviceDisabled: !api, error: error.message });
+        if (shouldRecordFailure(failed)) record('failure', failed, failed.error || localizeUpdater('unavailable', settings()));
         render(failed);
       } finally {
         restoreFocus();
@@ -380,19 +401,19 @@
         unsubscribe = subscribe(next => {
           const normalized = normalizeState(next);
           if (localPostponed && normalized.status === 'ready') normalized.status = 'postponed';
-          if (normalized.error || normalized.warning || ['failed', 'unavailable', 'offline', 'malformed-feed', 'invalid-hash', 'corrupt-asset', 'insufficient-storage', 'rollback'].includes(normalized.status)) record(normalized.warning ? 'warning' : 'failure', normalized, normalized.warning || normalized.error || localizeUpdater(normalized.status, settings()));
+          if (normalized.warning || (normalized.error && shouldRecordFailure(normalized))) record(normalized.warning ? 'warning' : 'failure', normalized, normalized.warning || normalized.error || localizeUpdater(normalized.status, settings()));
           render(normalized);
         });
       } catch { unsubscribe = null; }
     }
     const getState = apiMethod(api, ['getState', 'getStatus']);
     if (getState) Promise.resolve(getState()).then(next => { const normalized = normalizeState(next); render(localPostponed && normalized.status === 'ready' ? postponeLocalState(normalized) : normalized); }).catch(error => { const failed = { status: 'error', error: error?.message || 'The update service did not return its current state.' }; record('failure', normalizeState(failed), failed.error); render(failed); });
-    else render(api ? current : { status: 'unavailable' });
+    else render(api ? current : { status: 'unavailable', serviceDisabled: true, error: 'The desktop update service is not connected.' });
 
     return { destroy: () => { if (typeof unsubscribe === 'function') unsubscribe(); root.dataset.updaterMounted = 'false'; }, render, getState: () => current, execute };
   }
 
-  const exported = { CANONICAL_STATES, copy, formatBytes, normalizeState, progressPercent, localizeUpdater, readHistory, appendHistory, recordHistoryEntry, createFlatUpdaterAdapter, postponeLocalState, readRendererWorkState, safeUrl, mount };
+  const exported = { CANONICAL_STATES, copy, formatBytes, normalizeState, progressPercent, localizeUpdater, readHistory, appendHistory, recordHistoryEntry, createFlatUpdaterAdapter, postponeLocalState, readRendererWorkState, isCheckDisabled, shouldShowRetry, shouldRecordFailure, actionsForState, safeUrl, mount };
   if (typeof module !== 'undefined' && module.exports) module.exports = exported;
   global.DimSumUpdater = exported;
   if (global.document) {

@@ -62,6 +62,7 @@ dialog button { min-height: 38px; border: 0; border-radius: 999px; padding: 8px 
 .updater-progress-wrap progress { display: block; width: 100%; min-height: 10px; accent-color: var(--accent); }
 .updater-warning, .updater-blocked { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; font-size: 12px; line-height: 1.45; }
 .updater-warning { color: #704b13; background: #fff0c9; border: 1px solid #e3c87b; }
+.updater-error { color: #8a342e; background: #fde2de; border: 1px solid #e4aaa3; }
 .updater-blocked { color: #704b13; background: #fff0c9; border: 1px solid #e3c87b; }
 .updater-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .updater-actions .filter-button[disabled] { cursor: not-allowed; opacity: .55; }
