@@ -18,5 +18,6 @@ This hand-written inventory separates evidence that is often incorrectly combine
 - The observed HTTP 404 is correct pre-release behavior because `update.json` is absent. It is not a successful update check.
 - Remote completion requires a unique non-draft `0.1.1` release, immutable target commit, downloadable `Setup.exe`, `RELEASES`, full `.nupkg`, hashes, unsigned warning, published metadata, and an installed update cycle through ready-to-restart and current.
 - Capture completion requires the real installed artifact at the exact verified release commit. A source preview or pre-release error capture cannot substitute for the published success states.
+- Release line-count evidence is produced by `node scripts/count-lines.mjs` after the workflow proves `HEAD` equals `GITHUB_SHA`. Its Markdown output is inserted into release notes, while `--json` provides the same category, total, exclusion, and surviving-line attribution arithmetic for machine inspection. No unpublished count is copied into the README.
 
 Suggested articles: [Windows Electron companion](electron.md), [Automatic updates](automatic-update.md), [Documentation index](../README.md).

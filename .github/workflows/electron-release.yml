@@ -47,6 +47,14 @@ jobs:
           if ($sig.Status -ne 'NotSigned') { throw "Installer signing status is $($sig.Status), expected NotSigned." }
           node ../../scripts/verify-installer.mjs "--signature-status=$($sig.Status)"
           Get-FileHash dist/squirrel-windows/* -Algorithm SHA256 | ConvertTo-Json | Set-Content dist/squirrel-windows/hashes.json
+      - name: Count lines at the release commit
+        working-directory: ${{ github.workspace }}
+        shell: pwsh
+        run: |
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne $env:GITHUB_SHA) { throw "Checked-out commit $actual does not match GITHUB_SHA $env:GITHUB_SHA." }
+          node scripts/count-lines.mjs | Set-Content line-count.md -Encoding utf8
+          node scripts/count-lines.mjs --json | Set-Content line-count.json -Encoding utf8
       - name: Publish immutable release
         working-directory: ${{ github.workspace }}
         env:
@@ -75,7 +83,8 @@ jobs:
           node 'scripts/generate-update-metadata.mjs' "--tag=$tag" "--commit=$env:GITHUB_SHA" "--repo=$env:GITHUB_REPOSITORY"
           $metadata = Get-Item 'apps/dim-sum-atlas/dist/squirrel-windows/update-metadata.json'
           $assets += $metadata
-          $notes = "Windows Squirrel.Windows installer, intentionally unsigned.`n`nTarget commit: $env:GITHUB_SHA`nCode name: $codeName`nCatalog record: $($dish.id)`nPhoto provenance: catalog release $imageRelease, asset $photoName, SHA-256 $photoHash.`nPackaging provenance: electron-builder 26.15.3, Squirrel.Windows, signing disabled; independent Authenticode status: NotSigned.`n"
+          $lineCount = Get-Content 'line-count.md' -Raw
+          $notes = "Windows Squirrel.Windows installer, intentionally unsigned.`n`nTarget commit: $env:GITHUB_SHA`nCode name: $codeName`nCatalog record: $($dish.id)`nPhoto provenance: catalog release $imageRelease, asset $photoName, SHA-256 $photoHash.`nPackaging provenance: electron-builder 26.15.3, Squirrel.Windows, signing disabled; independent Authenticode status: NotSigned.`n`n## Project line count`n`n$lineCount`n"
           gh release create $tag --target $env:GITHUB_SHA --repo "$env:GITHUB_REPOSITORY" --title "Dim Sum Atlas $tag" --draft --notes $notes ($assets.FullName)
           $end = (Get-Date).ToUniversalTime()
           $duration = $end - $start
