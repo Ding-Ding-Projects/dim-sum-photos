@@ -67,7 +67,8 @@ class UpdaterEngine {
     this.path = options.path || path;
     this.clock = options.clock || (() => Date.now());
     this.storageRoot = options.storageRoot || null;
-    this.allowMajor = options.allowMajor !== false;
+    this.allowedMajor = Number.isInteger(options.allowedMajor) ? options.allowedMajor : null;
+    this.majorUpgradePolicy = typeof options.majorUpgradePolicy === 'function' ? options.majorUpgradePolicy : null;
     this.checkIntervalMs = Math.max(60_000, Number(options.checkIntervalMs) || 6 * 60 * 60 * 1000);
     this.maxRetries = Math.min(3, Math.max(0, Number(options.maxRetries) || 2));
     this.workState = { dirty: false, inFlight: false };
@@ -86,6 +87,7 @@ class UpdaterEngine {
       lastCheckedAt: null,
       stagedPath: null
     };
+    this._loadPersistedUpdate();
   }
 
   onState(listener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
@@ -99,6 +101,34 @@ class UpdaterEngine {
     const state = this.snapshot();
     for (const listener of this.listeners) { try { listener(state); } catch (_) { /* listener isolation */ } }
     return state;
+  }
+
+  _contained(target) {
+    if (!this.storageRoot || !target || !this.path.isAbsolute(target)) return false;
+    const root = this.path.resolve(this.storageRoot) + this.path.sep;
+    return this.path.resolve(target).startsWith(root);
+  }
+
+  _loadPersistedUpdate() {
+    if (!this.storageRoot) return;
+    const recordPath = this.path.join(this.storageRoot, 'last-valid-update.json');
+    try {
+      if (!this.fs.existsSync(recordPath)) return;
+      const raw = this.fs.readFileSync(recordPath);
+      if (raw.length > 64 * 1024) throw new Error('Persisted update state is too large.');
+      const record = JSON.parse(raw.toString('utf8'));
+      if (!/^\d+\.\d+\.\d+$/.test(record.version) || compareVersions(record.version, this.currentVersion) <= 0 || !this._contained(record.path) || !this._contained(record.packagePath) || !/^[a-f0-9]{64}$/i.test(record.sha256) || !/^[a-f0-9]{40}$/i.test(record.sha1) || !Number.isSafeInteger(record.size) || record.size <= 0 || typeof record.releasesLine !== 'string') throw new Error('Persisted update state is stale or invalid.');
+      if (!this.fs.existsSync(record.path) || !this.fs.existsSync(record.packagePath)) throw new Error('Persisted update files are missing.');
+      const body = this.fs.readFileSync(record.packagePath);
+      if (body.length !== record.size || crypto.createHash('sha256').update(body).digest('hex') !== record.sha256.toLowerCase() || crypto.createHash('sha1').update(body).digest('hex') !== record.sha1.toLowerCase()) throw new Error('Persisted update package integrity failed.');
+      const releases = this.fs.readFileSync(this.path.join(record.path, 'RELEASES'), 'utf8');
+      if (releases !== record.releasesLine) throw new Error('Persisted RELEASES metadata changed.');
+      const fields = releases.trim().split(/\s+/);
+      if (fields.length !== 3 || fields[0] !== record.sha1.toLowerCase() || fields[1] !== this.path.basename(record.packagePath) || Number(fields[2]) !== record.size) throw new Error('Persisted RELEASES identity is invalid.');
+      this.state = { ...this.state, state: 'ready', availableVersion: record.version, stagedPath: record.path, package: { filename: fields[1], size: record.size, sha256: record.sha256.toLowerCase(), sha1: record.sha1.toLowerCase(), packagePath: record.packagePath, feedDirectory: record.path, releasesLine: record.releasesLine } };
+    } catch (_) {
+      try { this.fs.rmSync(recordPath, { force: true }); } catch (__) { /* best effort purge */ }
+    }
   }
 
   start() {
@@ -138,7 +168,10 @@ class UpdaterEngine {
     }
     if (!validHttpsUrl(pkg.url) || !/^[a-f0-9]{64}$/i.test(pkg.sha256) || !Number.isSafeInteger(pkg.size) || pkg.size <= 0 || pkg.size > MAX_PACKAGE_BYTES || !validPackageFilename(pkg.filename || this.path.basename(new URL(pkg.url).pathname), metadata.version)) throw new Error('Update package metadata is invalid.');
     if (metadata.channel !== undefined && metadata.channel !== 'stable') throw new Error('Update metadata is for an unsupported channel.');
-    if (!this.allowMajor && majorVersion(metadata.version) !== majorVersion(this.currentVersion)) throw new Error('Major-version updates are not enabled for this installation.');
+    if (majorVersion(metadata.version) !== majorVersion(this.currentVersion)) {
+      const allowed = this.allowedMajor === majorVersion(metadata.version) || (this.majorUpgradePolicy && this.majorUpgradePolicy(majorVersion(metadata.version), metadata));
+      if (!allowed) throw new Error('Major-version updates require an explicit entitlement policy for the target major.');
+    }
     if (compareVersions(metadata.version, this.currentVersion) <= 0) return null;
     return { version: metadata.version, package: { url: pkg.url, sha256: pkg.sha256.toLowerCase(), size: pkg.size, filename: String(pkg.filename || this.path.basename(new URL(pkg.url).pathname)) }, releaseNotes: typeof metadata.releaseNotes === 'string' ? metadata.releaseNotes : '' };
   }

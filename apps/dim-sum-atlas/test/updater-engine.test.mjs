@@ -62,6 +62,17 @@ test('metadata validation rejects a same-version or malformed package', () => {
   assert.equal(validPackageFilename('Dim.Sum.Atlas-full.nupkg', '1.1.0'), false);
 });
 
+test('major updates are BETERED by default and require exact target-major authorization', () => {
+  const body = Buffer.from('major package');
+  const metadata = { statusCode: 200, body: feed('2.0.0', body) };
+  const blocked = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed' });
+  assert.throws(() => blocked.parseMetadata(metadata), /explicit entitlement/);
+  const allowed = new UpdaterEngine({ currentVersion: '1.0.0', allowedMajor: 2, feedUrl: 'https://updates.example.test/feed' });
+  assert.equal(allowed.parseMetadata(metadata).version, '2.0.0');
+  const callbackAllowed = new UpdaterEngine({ currentVersion: '1.0.0', majorUpgradePolicy: (targetMajor) => targetMajor === 2, feedUrl: 'https://updates.example.test/feed' });
+  assert.equal(callbackAllowed.parseMetadata(metadata).version, '2.0.0');
+});
+
 test('check and download validate identity, hash, size, retry, and ready state', async () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-'));
   const body = Buffer.from('validated package bytes');
@@ -155,5 +166,31 @@ test('cancel aborts a pending download and progress reports intermediate bytes',
   assert.equal(engine.cancel(), true);
   await pending;
   assert.equal(engine.snapshot().state, 'available');
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('valid staged update recovers after engine reload', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-recover-'));
+  const body = Buffer.from('recoverable package');
+  const first = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport: transportFor(feed('1.1.0', body), body) });
+  await first.check(); await first.download();
+  const reloaded = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root });
+  assert.equal(reloaded.snapshot().state, 'ready');
+  assert.equal(reloaded.snapshot().availableVersion, '1.1.0');
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('tampered or stale persisted update is purged and does not block the current install', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dim-sum-updater-recover-bad-'));
+  const body = Buffer.from('tamperable package');
+  const first = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport: transportFor(feed('1.1.0', body), body) });
+  await first.check(); const ready = await first.download();
+  fs.writeFileSync(ready.package.packagePath, 'tampered');
+  const tampered = new UpdaterEngine({ currentVersion: '1.0.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root });
+  assert.equal(tampered.snapshot().state, 'idle');
+  assert.equal(fs.existsSync(path.join(root, 'last-valid-update.json')), false);
+  const stale = new UpdaterEngine({ currentVersion: '1.1.0', feedUrl: 'https://updates.example.test/feed', storageRoot: root, transport: transportFor(feed('1.1.0', body), body) });
+  await stale.check().catch(() => undefined);
+  assert.equal(stale.snapshot().state, 'idle');
   fs.rmSync(root, { recursive: true, force: true });
 });
