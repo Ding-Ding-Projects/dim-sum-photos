@@ -2,6 +2,9 @@
 
 ## Current
 
+- [x] Reconcile the primary checkout with `origin/main` at `998c425`, refresh the handoff, and complete the closeout inventory with no uncommitted, unmerged, or unpushed task-owned work found.
+- [x] Verify the default branch ref and preserve the current clean state without removing any ownership-uncertain or load-bearing item.
+
 - [x] Publish and remotely verify the repaired unsigned Squirrel.Windows release at exact commit `83613a99439225c13a05a9769ca64f28843e4be4`.
 - [ ] Provide fresh-machine verified root dependency, build, and installer scripts with pinned icon generation and artifact verification (local packaging is verified; fresh-machine bootstrap remains unverified).
 - [x] Assemble and verify the packaged catalog deterministically at `2919` unique dishes and publish immutable update metadata.

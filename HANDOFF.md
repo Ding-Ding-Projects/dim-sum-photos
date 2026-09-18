@@ -2,6 +2,10 @@
 
 ## Verified state
 
+- Repository closeout refreshed on 2026-09-18. The primary checkout is `main` at `998c425`, and `git ls-remote origin refs/heads/main` must continue to resolve to that commit before any cleanup is considered.
+- Inventory at closeout found no uncommitted files, no linked checkouts, no local Lap Sap Tongs, no non-default local jers, and no open GitHub issues. The fetched `AGENTS.md` change was already on `main` after a fast-forward from `2541e4f`.
+- No conflict markers or unmerged index entries were present, so no conflict-resolution choice was required. No task-owned cleanup candidate was identified.
+
 - Catalog validation passes for 2,919 dishes.
 - Addition validation passes for 53 records across two addition files.
 - The latest verified Windows release is `desktop-66-83613a99` at commit `83613a99439225c13a05a9769ca64f28843e4be4`.
